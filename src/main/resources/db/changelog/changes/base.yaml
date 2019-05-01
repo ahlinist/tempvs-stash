@@ -1,0 +1,192 @@
+databaseChangeLog:
+- changeSet:
+    id: 1556745359531-1
+    author: albvs (generated)
+    changes:
+    - createSequence:
+        sequenceName: hibernate_sequence
+- changeSet:
+    id: 1556745359531-2
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: app_userPK
+            name: id
+            type: BIGINT
+        - column:
+            name: user_name
+            type: VARCHAR(255)
+        tableName: app_user
+- changeSet:
+    id: 1556745359531-3
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: imagePK
+            name: object_id
+            type: VARCHAR(255)
+        - column:
+            name: file_name
+            type: VARCHAR(255)
+        - column:
+            name: image_info
+            type: VARCHAR(255)
+        tableName: image
+- changeSet:
+    id: 1556745359531-4
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: itemPK
+            name: id
+            type: BIGINT
+        - column:
+            name: classification
+            type: INTEGER
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: period
+            type: INTEGER
+        - column:
+            name: item_group_id
+            type: BIGINT
+        tableName: item
+- changeSet:
+    id: 1556745359531-5
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: item_groupPK
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: owner_id
+            type: BIGINT
+        tableName: item_group
+- changeSet:
+    id: 1556745359531-6
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: item_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: images_object_id
+            type: VARCHAR(255)
+        tableName: item_images
+- changeSet:
+    id: 1556745359531-7
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: item_to_sourcePK
+            name: id
+            type: BIGINT
+        - column:
+            name: item_id
+            type: BIGINT
+        - column:
+            name: source_id
+            type: BIGINT
+        tableName: item_to_source
+- changeSet:
+    id: 1556745359531-8
+    author: albvs (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: images_object_id
+        constraintName: UK_jxspkjithlkrckvx5bpxwksie
+        tableName: item_images
+- changeSet:
+    id: 1556745359531-9
+    author: albvs (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: item_id
+        baseTableName: item_images
+        constraintName: FKbblr4qy805jfsx4aiy1uww0mb
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: item
+        validate: true
+- changeSet:
+    id: 1556745359531-10
+    author: albvs (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: owner_id
+        baseTableName: item_group
+        constraintName: FKfxwpeh0ej7yutw8dc64r0bdih
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: app_user
+        validate: true
+- changeSet:
+    id: 1556745359531-11
+    author: albvs (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: images_object_id
+        baseTableName: item_images
+        constraintName: FKjsalcmjtpwsb2e9rlovdn57n2
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: object_id
+        referencedTableName: image
+        validate: true
+- changeSet:
+    id: 1556745359531-12
+    author: albvs (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: item_group_id
+        baseTableName: item
+        constraintName: FKr4fbv7293k0b5v1qjk5lm6md
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: item_group
+        validate: true
+

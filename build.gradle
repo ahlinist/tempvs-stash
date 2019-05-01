@@ -1,0 +1,101 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'org.liquibase.gradle' version '2.0.1'
+	id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'club.tempvs'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', 'Greenwich.SR1')
+}
+
+liquibase {
+	activities {
+		main {
+			changeLogFile 'src/main/resources/db/changelog/changes/' + System.getenv('LIQUIBASE_DIFF_FILENAME')
+			url System.getenv('JDBC_DATABASE_URL')
+			referenceUrl 'hibernate:spring:club.tempvs.stash.domain?dialect=org.hibernate.dialect.PostgreSQL95Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy'
+			username System.getenv('JDBC_DATABASE_USERNAME')
+			password System.getenv('JDBC_DATABASE_PASSWORD')
+		}
+	}
+}
+
+diff.dependsOn compileJava
+diffChangeLog.dependsOn compileJava
+generateChangelog.dependsOn compileJava
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+	implementation "org.postgresql:postgresql:${postgresVersion}"
+	implementation "org.liquibase:liquibase-core:${liquibaseVersion}" //to fire changelog migration on startup
+	//lombok
+	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
+	//liquibase
+	liquibaseRuntime "org.liquibase:liquibase-core:${liquibaseVersion}"
+	liquibaseRuntime "org.postgresql:postgresql:${postgresVersion}"
+	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
+	liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+	liquibaseRuntime sourceSets.main.output
+	//testing
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+	testImplementation 'com.h2database:h2:1.4.194'
+	//amqp
+	implementation 'com.rabbitmq:amqp-client:3.3.4'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+bootJar {
+	archiveBaseName = 'tempvs-stash'
+	version =  project.version
+}
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file('src/integration-test/java')
+		}
+
+		resources.srcDir file('src/integration-test/resources')
+	}
+}
+
+task integrationTest(type: Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntime.extendsFrom testRuntime
+}
+
+task stage() {
+	dependsOn build
+}
