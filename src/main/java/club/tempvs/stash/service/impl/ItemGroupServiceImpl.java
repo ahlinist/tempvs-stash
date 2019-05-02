@@ -47,7 +47,16 @@ public class ItemGroupServiceImpl implements ItemGroupService {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
     public List<ItemGroup> findAllByUserId(Long userId) {
-        return itemGroupRepository.findAllByUserId(userId);
+        Long id;
+
+        if (userId == null) {
+            User user = userHolder.getUser();
+            id = user.getId();
+        } else {
+            id = userId;
+        }
+
+        return itemGroupRepository.findAllByUserId(id);
     }
 
     @Override

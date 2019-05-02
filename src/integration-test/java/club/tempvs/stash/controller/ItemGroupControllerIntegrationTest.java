@@ -87,6 +87,33 @@ public class ItemGroupControllerIntegrationTest {
     }
 
     @Test
+    public void testFindAllByUserIdForMissingId() throws Exception {
+        Long userId = 1L;
+        String userName = "Tony Stark";
+        String group1Name = "group 1 name";
+        String group1Description = "group 1 desc";
+        String group2Name = "group 2 name";
+        String group2Description = "group 2 desc";
+        User user = entityHelper.createUser(userId, userName);
+        entityHelper.createItemGroup(user, group1Name, group1Description);
+        entityHelper.createItemGroup(user, group2Name, group2Description);
+        String userInfoValue = entityHelper.composeUserInfo(userId, userName, "en");
+
+        mvc.perform(get("/api/group")
+                .header(USER_INFO_HEADER, userInfoValue)
+                .header(AUTHORIZATION_HEADER, TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name", is("group 1 name")))
+                .andExpect(jsonPath("$[0].description", is("group 1 desc")))
+                .andExpect(jsonPath("$[0].owner.userId", is(userId.intValue())))
+                .andExpect(jsonPath("$[0].owner.userName", is(userName)))
+                .andExpect(jsonPath("$[1].name", is("group 2 name")))
+                .andExpect(jsonPath("$[1].description", is("group 2 desc")))
+                .andExpect(jsonPath("$[1].owner.userId", is(userId.intValue())))
+                .andExpect(jsonPath("$[1].owner.userName", is(userName)));
+    }
+
+    @Test
     public void testGetById() throws Exception {
         Long userId = 1L;
         String userName = "Tony Stark";

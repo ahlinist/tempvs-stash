@@ -24,7 +24,7 @@ public class ItemGroupController {
     }
 
     @GetMapping
-    public List<ItemGroupDto> findGroupsByUserId(@RequestParam Long userId) {
+    public List<ItemGroupDto> findGroupsByUserId(@RequestParam(required = false) Long userId) {
         return itemGroupService.findAllByUserId(userId).stream()
                 .map(ItemGroup::toItemGroupDto)
                 .collect(toList());

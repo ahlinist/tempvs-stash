@@ -91,6 +91,23 @@ public class ItemGroupServiceTest {
     }
 
     @Test
+    public void testFindAllByUserIdForMissingId() {
+        Long userId = 1L;
+        List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemGroupRepository.findAllByUserId(userId)).thenReturn(itemGroups);
+
+        List<ItemGroup> result = itemGroupService.findAllByUserId(null);
+
+        verify(itemGroupRepository).findAllByUserId(userId);
+        verifyNoMoreInteractions(itemGroupRepository);
+
+        assertEquals("ItemGroup list is returned", itemGroups, result);
+    }
+
+    @Test
     public void testGetById() {
         Long itemGroupId = 1L;
 
