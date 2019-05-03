@@ -19,7 +19,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })    public User save(User user) {
+    })
+    public User save(User user) {
         return userRepository.save(user);
     }
 
@@ -29,6 +30,6 @@ public class UserServiceImpl implements UserService {
     })
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No user with id " + id + "found."));
+                .orElseThrow(() -> new NoSuchElementException("No user with id " + id + " found."));
     }
 }
