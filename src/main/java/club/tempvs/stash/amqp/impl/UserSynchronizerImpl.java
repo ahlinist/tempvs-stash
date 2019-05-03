@@ -13,7 +13,7 @@ import java.io.IOException;
 @Component
 public class UserSynchronizerImpl extends AbstractAMQPConnector implements UserSynchronizer {
 
-    private static final String LIBRARY_USER_AMQP_QUEUE = "stash.user";
+    private static final String STASH_USER_AMQP_QUEUE = "stash.user";
 
     private final UserService userService;
 
@@ -21,7 +21,7 @@ public class UserSynchronizerImpl extends AbstractAMQPConnector implements UserS
     public UserSynchronizerImpl(ObjectMapper jacksonObjectMapper,
                                 UserService userService,
                                 ConnectionFactory amqpConnectionFactory) {
-        super(amqpConnectionFactory, jacksonObjectMapper, LIBRARY_USER_AMQP_QUEUE);
+        super(amqpConnectionFactory, jacksonObjectMapper, STASH_USER_AMQP_QUEUE);
         this.userService = userService;
     }
 
