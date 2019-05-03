@@ -7,6 +7,7 @@ import club.tempvs.stash.dao.ItemGroupRepository;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
+import club.tempvs.stash.dto.StashDto;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.impl.ItemGroupServiceImpl;
 import club.tempvs.stash.util.ValidationHelper;
@@ -38,10 +39,12 @@ public class ItemGroupServiceTest {
     private ItemGroupRepository itemGroupRepository;
     @Mock
     private ValidationHelper validationHelper;
+    @Mock
+    private UserService userService;
 
     @Before
     public void setUp() {
-        itemGroupService = new ItemGroupServiceImpl(userHolder, itemGroupRepository, validationHelper);
+        itemGroupService = new ItemGroupServiceImpl(userHolder, itemGroupRepository, validationHelper, userService);
     }
 
     @Test
@@ -76,35 +79,41 @@ public class ItemGroupServiceTest {
     }
 
     @Test
-    public void testFindAllByUserId() {
+    public void testGetStash() {
         Long userId = 1L;
         List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
+        StashDto stashDto = new StashDto(user, itemGroups);
 
-        when(itemGroupRepository.findAllByUserId(userId)).thenReturn(itemGroups);
+        when(userService.getById(userId)).thenReturn(user);
+        when(itemGroupRepository.findAllByOwner(user)).thenReturn(itemGroups);
 
-        List<ItemGroup> result = itemGroupService.findAllByUserId(userId);
+        StashDto result = itemGroupService.getStash(userId);
 
-        verify(itemGroupRepository).findAllByUserId(userId);
-        verifyNoMoreInteractions(itemGroupRepository);
+        verify(userService).getById(userId);
+        verify(itemGroupRepository).findAllByOwner(user);
+        verifyNoMoreInteractions(itemGroupRepository, userService);
 
-        assertEquals("ItemGroup list is returned", itemGroups, result);
+        assertEquals("StashDto is returned", stashDto, result);
     }
 
     @Test
-    public void testFindAllByUserIdForMissingId() {
+    public void testGetStashForMissingId() {
         Long userId = 1L;
         List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
+        StashDto stashDto = new StashDto(user, itemGroups);
 
         when(userHolder.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
-        when(itemGroupRepository.findAllByUserId(userId)).thenReturn(itemGroups);
+        when(userService.getById(userId)).thenReturn(user);
+        when(itemGroupRepository.findAllByOwner(user)).thenReturn(itemGroups);
 
-        List<ItemGroup> result = itemGroupService.findAllByUserId(null);
+        StashDto result = itemGroupService.getStash(null);
 
-        verify(itemGroupRepository).findAllByUserId(userId);
-        verifyNoMoreInteractions(itemGroupRepository);
+        verify(userService).getById(userId);
+        verify(itemGroupRepository).findAllByOwner(user);
+        verifyNoMoreInteractions(itemGroupRepository, userService);
 
-        assertEquals("ItemGroup list is returned", itemGroups, result);
+        assertEquals("StashDto is returned", stashDto, result);
     }
 
     @Test

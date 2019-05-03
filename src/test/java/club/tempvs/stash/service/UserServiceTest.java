@@ -12,6 +12,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
@@ -37,5 +40,28 @@ public class UserServiceTest {
         verifyNoMoreInteractions(userRepository);
 
         assertEquals("User object is returned", user, result);
+    }
+
+    @Test
+    public void testGetById() {
+        Long id = 1L;
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        User result = userService.getById(id);
+
+        verify(userRepository).findById(id);
+        verifyNoMoreInteractions(userRepository);
+
+        assertEquals("User is returned", user, result);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetByIdForMissingEntry() {
+        Long id = 1L;
+
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        userService.getById(id);
     }
 }

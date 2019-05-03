@@ -1,14 +1,13 @@
 package club.tempvs.stash.service;
 
 import club.tempvs.stash.domain.ItemGroup;
-
-import java.util.List;
+import club.tempvs.stash.dto.StashDto;
 
 public interface ItemGroupService {
 
     ItemGroup create(ItemGroup itemGroup);
 
-    List<ItemGroup> findAllByUserId(Long userId);
+    StashDto getStash(Long userId);
 
     ItemGroup getById(Long id);
 }

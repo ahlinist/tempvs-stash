@@ -5,4 +5,6 @@ import club.tempvs.stash.domain.User;
 public interface UserService {
 
     User save(User user);
+
+    User getById(Long id);
 }

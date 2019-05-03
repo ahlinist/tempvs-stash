@@ -6,8 +6,10 @@ import club.tempvs.stash.dao.ItemGroupRepository;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
+import club.tempvs.stash.dto.StashDto;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.ItemGroupService;
+import club.tempvs.stash.service.UserService;
 import club.tempvs.stash.util.ValidationHelper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     private final UserHolder userHolder;
     private final ItemGroupRepository itemGroupRepository;
     private final ValidationHelper validationHelper;
+    private final UserService userService;
 
     @Override
     public ItemGroup create(ItemGroup itemGroup) {
@@ -43,20 +47,12 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     }
 
     @Override
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
-    public List<ItemGroup> findAllByUserId(Long userId) {
-        Long id;
-
-        if (userId == null) {
-            User user = userHolder.getUser();
-            id = user.getId();
-        } else {
-            id = userId;
-        }
-
-        return itemGroupRepository.findAllByUserId(id);
+    public StashDto getStash(Long userId) {
+        Long id = Optional.ofNullable(userId)
+                .orElseGet(() -> userHolder.getUser().getId());
+        User user = userService.getById(id);
+        List<ItemGroup> groups = findGroupsByUser(user);
+        return new StashDto(user, groups);
     }
 
     @Override
@@ -66,6 +62,13 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     public ItemGroup getById(Long id) {
         return itemGroupRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No group with id " + id + " found!"));
+    }
+
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    private List<ItemGroup> findGroupsByUser(User user) {
+        return itemGroupRepository.findAllByOwner(user);
     }
 
     @HystrixCommand(commandProperties = {

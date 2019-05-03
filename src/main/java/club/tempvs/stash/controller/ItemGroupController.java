@@ -1,14 +1,11 @@
 package club.tempvs.stash.controller;
 
-import static java.util.stream.Collectors.toList;
-
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.dto.ItemGroupDto;
+import club.tempvs.stash.dto.StashDto;
 import club.tempvs.stash.service.ItemGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/group")
@@ -24,10 +21,8 @@ public class ItemGroupController {
     }
 
     @GetMapping
-    public List<ItemGroupDto> findGroupsByUserId(@RequestParam(required = false) Long userId) {
-        return itemGroupService.findAllByUserId(userId).stream()
-                .map(ItemGroup::toItemGroupDto)
-                .collect(toList());
+    public StashDto findGroupsByUserId(@RequestParam(required = false) Long userId) {
+        return itemGroupService.getStash(userId);
     }
 
     @GetMapping("/{id}")

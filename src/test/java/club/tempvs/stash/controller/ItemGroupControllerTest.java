@@ -5,15 +5,13 @@ import static org.junit.Assert.*;
 
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.dto.ItemGroupDto;
+import club.tempvs.stash.dto.StashDto;
 import club.tempvs.stash.service.ItemGroupService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ItemGroupControllerTest {
@@ -24,6 +22,8 @@ public class ItemGroupControllerTest {
     private ItemGroup itemGroup;
     @Mock
     private ItemGroupDto itemGroupDto;
+    @Mock
+    private StashDto stashDto;
     @Mock
     private ItemGroupService itemGroupService;
 
@@ -50,18 +50,15 @@ public class ItemGroupControllerTest {
     @Test
     public void testFindGroupsByUserId() {
         Long userId = 1L;
-        List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
-        List<ItemGroupDto> itemGroupDtos = Arrays.asList(itemGroupDto, itemGroupDto);
 
-        when(itemGroupService.findAllByUserId(userId)).thenReturn(itemGroups);
-        when(itemGroup.toItemGroupDto()).thenReturn(itemGroupDto);
+        when(itemGroupService.getStash(userId)).thenReturn(stashDto);
 
-        List<ItemGroupDto> result = itemGroupController.findGroupsByUserId(userId);
+        StashDto result = itemGroupController.findGroupsByUserId(userId);
 
-        verify(itemGroupService).findAllByUserId(userId);
+        verify(itemGroupService).getStash(userId);
         verifyNoMoreInteractions(itemGroupService);
 
-        assertEquals("List of groups is returned", itemGroupDtos, result);
+        assertEquals("List of groups is returned", stashDto, result);
     }
 
     @Test
