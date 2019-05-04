@@ -41,7 +41,8 @@ public class ItemGroupServiceImpl implements ItemGroupService {
         }
 
         validationHelper.processErrors(errors);
-        User user = userHolder.getUser();
+        Long userId = userHolder.getUser().getId();
+        User user = userService.getById(userId);
         itemGroup.setOwner(user);
         return save(itemGroup);
     }

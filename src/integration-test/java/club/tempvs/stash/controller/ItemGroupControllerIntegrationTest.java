@@ -41,6 +41,7 @@ public class ItemGroupControllerIntegrationTest {
         Long userId = 1L;
         String userName = "Name Surname";
         String lang = "en";
+        entityHelper.createUser(userId, userName);
         File createGroupFile = ResourceUtils.getFile("classpath:group/create.json");
         String createGroupJson = new String(Files.readAllBytes(createGroupFile.toPath()));
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
@@ -55,8 +56,7 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(jsonPath("name", is("group name")))
                     .andExpect(jsonPath("description", is("group description")))
                     .andExpect(jsonPath("owner.userId", is(userId.intValue())))
-                    .andExpect(jsonPath("owner.userName", is(userName)))
-                    .andExpect(jsonPath("owner.lang", is(lang)));
+                    .andExpect(jsonPath("owner.userName", is(userName)));
     }
 
     @Test

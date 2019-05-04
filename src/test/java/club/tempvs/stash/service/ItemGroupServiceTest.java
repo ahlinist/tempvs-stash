@@ -50,8 +50,11 @@ public class ItemGroupServiceTest {
     @Test
     public void testCreate() {
         String name = "name";
+        Long userId = 1L;
 
         when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(userService.getById(userId)).thenReturn(user);
         when(itemGroupRepository.save(itemGroup)).thenReturn(itemGroup);
         when(validationHelper.getErrors()).thenReturn(errors);
         when(itemGroup.getName()).thenReturn(name);
@@ -60,9 +63,10 @@ public class ItemGroupServiceTest {
 
         verify(validationHelper).getErrors();
         verify(validationHelper).processErrors(errors);
+        verify(userService).getById(userId);
         verify(itemGroup).setOwner(user);
         verify(itemGroupRepository).save(itemGroup);
-        verifyNoMoreInteractions(validationHelper, itemGroupRepository);
+        verifyNoMoreInteractions(validationHelper, itemGroupRepository, userService);
 
         assertEquals("ItemGroup object is returned", itemGroup, result);
     }
