@@ -1,6 +1,6 @@
 package club.tempvs.stash.service.impl;
 
-import static java.util.Objects.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import club.tempvs.stash.dao.ItemGroupRepository;
 import club.tempvs.stash.domain.ItemGroup;
@@ -36,7 +36,7 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     public ItemGroup create(ItemGroup itemGroup) {
         ErrorsDto errors = validationHelper.getErrors();
 
-        if (isNull(itemGroup.getName())) {
+        if (isBlank(itemGroup.getName())) {
             validationHelper.addError(errors, NAME_FIELD, NAME_BLANK);
         }
 

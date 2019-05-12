@@ -60,6 +60,26 @@ public class ItemGroupControllerIntegrationTest {
     }
 
     @Test
+    public void testCreateForInvalidInput() throws Exception {
+        Long userId = 1L;
+        String userName = "Name Surname";
+        String lang = "en";
+        entityHelper.createUser(userId, userName);
+        File createGroupFile = ResourceUtils.getFile("classpath:group/create-invalid.json");
+        String createGroupJson = new String(Files.readAllBytes(createGroupFile.toPath()));
+        String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
+
+        mvc.perform(post("/api/group")
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(createGroupJson)
+                .header(USER_INFO_HEADER, userInfoValue)
+                .header(AUTHORIZATION_HEADER, TOKEN))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.name", is("Group name can't be blank")));
+    }
+
+    @Test
     public void testFindAllByUserId() throws Exception {
         Long userId = 1L;
         String userName = "Tony Stark";
