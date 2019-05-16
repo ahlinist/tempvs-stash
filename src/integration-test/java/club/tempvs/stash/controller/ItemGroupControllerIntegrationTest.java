@@ -55,7 +55,7 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("name", is("group name")))
                     .andExpect(jsonPath("description", is("group description")))
-                    .andExpect(jsonPath("owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("owner.userName", is(userName)));
     }
 
@@ -100,11 +100,11 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(jsonPath("owner.userName", is(userName)))
                     .andExpect(jsonPath("groups[0].name", is("group 1 name")))
                     .andExpect(jsonPath("groups[0].description", is("group 1 desc")))
-                    .andExpect(jsonPath("groups[0].owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("groups[0].owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("groups[0].owner.userName", is(userName)))
                     .andExpect(jsonPath("groups[1].name", is("group 2 name")))
                     .andExpect(jsonPath("groups[1].description", is("group 2 desc")))
-                    .andExpect(jsonPath("groups[1].owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("groups[1].owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("groups[1].owner.userName", is(userName)));
     }
 
@@ -129,11 +129,11 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(jsonPath("owner.userName", is(userName)))
                     .andExpect(jsonPath("groups[0].name", is("group 1 name")))
                     .andExpect(jsonPath("groups[0].description", is("group 1 desc")))
-                    .andExpect(jsonPath("groups[0].owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("groups[0].owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("groups[0].owner.userName", is(userName)))
                     .andExpect(jsonPath("groups[1].name", is("group 2 name")))
                     .andExpect(jsonPath("groups[1].description", is("group 2 desc")))
-                    .andExpect(jsonPath("groups[1].owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("groups[1].owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("groups[1].owner.userName", is(userName)));
     }
 
@@ -157,7 +157,7 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("name", is(groupName)))
                     .andExpect(jsonPath("description", is(groupDescription)))
-                    .andExpect(jsonPath("owner.userId", is(userId.intValue())))
+                    .andExpect(jsonPath("owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("owner.userName", is(userName)));
     }
 }
