@@ -4,7 +4,6 @@ import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Data
 @NoArgsConstructor
