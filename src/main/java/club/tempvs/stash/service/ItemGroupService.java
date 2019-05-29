@@ -10,4 +10,8 @@ public interface ItemGroupService {
     StashDto getStash(Long userId);
 
     ItemGroup getById(Long id);
+
+    ItemGroup updateName(Long id, String name);
+
+    ItemGroup updateDescription(Long id, String description);
 }

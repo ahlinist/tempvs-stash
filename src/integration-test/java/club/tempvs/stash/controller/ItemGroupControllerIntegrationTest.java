@@ -160,4 +160,60 @@ public class ItemGroupControllerIntegrationTest {
                     .andExpect(jsonPath("owner.id", is(userId.intValue())))
                     .andExpect(jsonPath("owner.userName", is(userName)));
     }
+
+    @Test
+    public void testUpdateName() throws Exception {
+        Long userId = 1L;
+        String userName = "Tony Stark";
+        String groupName = "group name";
+        String groupDescription = "group desc";
+        String lang = "en";
+        User user = entityHelper.createUser(userId, userName);
+        ItemGroup itemGroup = entityHelper.createItemGroup(user, groupName, groupDescription);
+        Long groupId = itemGroup.getId();
+        String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
+
+        File updateNameFile = ResourceUtils.getFile("classpath:group/update-name.json");
+        String updateNameJson = new String(Files.readAllBytes(updateNameFile.toPath()));
+
+        mvc.perform(patch("/api/group/" + groupId + "/name")
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(updateNameJson)
+                .header(USER_INFO_HEADER, userInfoValue)
+                .header(AUTHORIZATION_HEADER, TOKEN))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("name", is("new name")))
+                    .andExpect(jsonPath("description", is(groupDescription)))
+                    .andExpect(jsonPath("owner.id", is(userId.intValue())))
+                    .andExpect(jsonPath("owner.userName", is(userName)));
+    }
+
+    @Test
+    public void testUpdateDescription() throws Exception {
+        Long userId = 1L;
+        String userName = "Tony Stark";
+        String groupName = "group name";
+        String groupDescription = "group desc";
+        String lang = "en";
+        User user = entityHelper.createUser(userId, userName);
+        ItemGroup itemGroup = entityHelper.createItemGroup(user, groupName, groupDescription);
+        Long groupId = itemGroup.getId();
+        String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
+
+        File updateDescriptionFile = ResourceUtils.getFile("classpath:group/update-description.json");
+        String updateDescriptionJson = new String(Files.readAllBytes(updateDescriptionFile.toPath()));
+
+        mvc.perform(patch("/api/group/" + groupId + "/description")
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(updateDescriptionJson)
+                .header(USER_INFO_HEADER, userInfoValue)
+                .header(AUTHORIZATION_HEADER, TOKEN))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("name", is(groupName)))
+                    .andExpect(jsonPath("description", is("new description")))
+                    .andExpect(jsonPath("owner.id", is(userId.intValue())))
+                    .andExpect(jsonPath("owner.userName", is(userName)));
+    }
 }

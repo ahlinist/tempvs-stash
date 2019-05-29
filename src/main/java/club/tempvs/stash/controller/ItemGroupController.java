@@ -7,6 +7,8 @@ import club.tempvs.stash.service.ItemGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/group")
 @RequiredArgsConstructor
@@ -28,6 +30,18 @@ public class ItemGroupController {
     @GetMapping("/{id}")
     public ItemGroupDto findGroupById(@PathVariable Long id) {
         return itemGroupService.getById(id)
+                .toItemGroupDto();
+    }
+
+    @PatchMapping("/{id}/name")
+    public ItemGroupDto updateName(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        return itemGroupService.updateName(id, payload.get("name"))
+                .toItemGroupDto();
+    }
+
+    @PatchMapping("/{id}/description")
+    public ItemGroupDto updateDescription(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        return itemGroupService.updateDescription(id, payload.get("description"))
                 .toItemGroupDto();
     }
 }

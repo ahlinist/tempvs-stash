@@ -7,15 +7,17 @@ import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.dto.ItemGroupDto;
 import club.tempvs.stash.dto.StashDto;
 import club.tempvs.stash.service.ItemGroupService;
-import org.junit.Before;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ItemGroupControllerTest {
 
+    @InjectMocks
     private ItemGroupController itemGroupController;
 
     @Mock
@@ -26,11 +28,6 @@ public class ItemGroupControllerTest {
     private StashDto stashDto;
     @Mock
     private ItemGroupService itemGroupService;
-
-    @Before
-    public void setUp() {
-        itemGroupController = new ItemGroupController(itemGroupService);
-    }
 
     @Test
     public void testCreate() {
@@ -71,6 +68,38 @@ public class ItemGroupControllerTest {
         ItemGroupDto result = itemGroupController.findGroupById(id);
 
         verify(itemGroupService).getById(id);
+        verifyNoMoreInteractions(itemGroupService);
+
+        assertEquals("ItemGroupDto is returned", itemGroupDto, result);
+    }
+
+    @Test
+    public void testUpdateName() {
+        Long id = 1L;
+        String name = "name";
+
+        when(itemGroupService.updateName(id, name)).thenReturn(itemGroup);
+        when(itemGroup.toItemGroupDto()).thenReturn(itemGroupDto);
+
+        ItemGroupDto result = itemGroupController.updateName(id, ImmutableMap.of("name", name));
+
+        verify(itemGroupService).updateName(id, name);
+        verifyNoMoreInteractions(itemGroupService);
+
+        assertEquals("ItemGroupDto is returned", itemGroupDto, result);
+    }
+
+    @Test
+    public void testUpdateDescription() {
+        Long id = 1L;
+        String description = "description";
+
+        when(itemGroupService.updateDescription(id, description)).thenReturn(itemGroup);
+        when(itemGroup.toItemGroupDto()).thenReturn(itemGroupDto);
+
+        ItemGroupDto result = itemGroupController.updateDescription(id, ImmutableMap.of("description", description));
+
+        verify(itemGroupService).updateDescription(id, description);
         verifyNoMoreInteractions(itemGroupService);
 
         assertEquals("ItemGroupDto is returned", itemGroupDto, result);

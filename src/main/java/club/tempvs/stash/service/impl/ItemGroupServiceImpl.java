@@ -7,6 +7,7 @@ import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.dto.StashDto;
+import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.ItemGroupService;
 import club.tempvs.stash.service.UserService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,7 +27,7 @@ import java.util.Optional;
 public class ItemGroupServiceImpl implements ItemGroupService {
 
     private static final String NAME_FIELD = "name";
-    private static final String NAME_BLANK = "group.name.blank.error";
+    private static final String NAME_BLANK_ERROR = "group.name.blank.error";
 
     private final UserHolder userHolder;
     private final ItemGroupRepository itemGroupRepository;
@@ -37,7 +39,7 @@ public class ItemGroupServiceImpl implements ItemGroupService {
         ErrorsDto errors = validationHelper.getErrors();
 
         if (isBlank(itemGroup.getName())) {
-            validationHelper.addError(errors, NAME_FIELD, NAME_BLANK);
+            validationHelper.addError(errors, NAME_FIELD, NAME_BLANK_ERROR);
         }
 
         validationHelper.processErrors(errors);
@@ -54,6 +56,41 @@ public class ItemGroupServiceImpl implements ItemGroupService {
         User user = userService.getById(id);
         List<ItemGroup> groups = findGroupsByUser(user);
         return new StashDto(user, groups);
+    }
+
+    @Override
+    public ItemGroup updateName(Long id, String name) {
+        User user = userHolder.getUser();
+        ItemGroup itemGroup = getById(id);
+        User owner = itemGroup.getOwner();
+
+        if (!Objects.equals(user.getId(), owner.getId())) {
+            throw new ForbiddenException("Only owner can change group name");
+        }
+
+        ErrorsDto errorsDto = validationHelper.getErrors();
+
+        if (isBlank(name)) {
+            validationHelper.addError(errorsDto, NAME_FIELD, NAME_BLANK_ERROR);
+        }
+
+        validationHelper.processErrors(errorsDto);
+        itemGroup.setName(name);
+        return save(itemGroup);
+    }
+
+    @Override
+    public ItemGroup updateDescription(Long id, String description) {
+        User user = userHolder.getUser();
+        ItemGroup itemGroup = getById(id);
+        User owner = itemGroup.getOwner();
+
+        if (!Objects.equals(user.getId(), owner.getId())) {
+            throw new ForbiddenException("Only owner can change group name");
+        }
+
+        itemGroup.setDescription(description);
+        return save(itemGroup);
     }
 
     @Override

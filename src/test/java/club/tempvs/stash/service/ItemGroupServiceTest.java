@@ -8,12 +8,13 @@ import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.dto.StashDto;
+import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.impl.ItemGroupServiceImpl;
 import club.tempvs.stash.util.ValidationHelper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -25,7 +26,8 @@ import java.util.Optional;
 @RunWith(MockitoJUnitRunner.class)
 public class ItemGroupServiceTest {
 
-    private ItemGroupService itemGroupService;
+    @InjectMocks
+    private ItemGroupServiceImpl itemGroupService;
 
     @Mock
     private ItemGroup itemGroup;
@@ -41,11 +43,6 @@ public class ItemGroupServiceTest {
     private ValidationHelper validationHelper;
     @Mock
     private UserService userService;
-
-    @Before
-    public void setUp() {
-        itemGroupService = new ItemGroupServiceImpl(userHolder, itemGroupRepository, validationHelper, userService);
-    }
 
     @Test
     public void testCreate() {
@@ -141,5 +138,102 @@ public class ItemGroupServiceTest {
         when(itemGroupRepository.findById(itemGroupId)).thenReturn(Optional.empty());
 
         itemGroupService.getById(itemGroupId);
+    }
+
+    @Test
+    public void testUpdateName() {
+        Long id = 1L;
+        Long userId = 2L;
+        String name = "name";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.of(itemGroup));
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(validationHelper.getErrors()).thenReturn(errors);
+        when(itemGroupRepository.save(itemGroup)).thenReturn(itemGroup);
+
+        itemGroupService.updateName(id, name);
+
+        verify(itemGroupRepository).findById(id);
+        verify(validationHelper).getErrors();
+        verify(validationHelper).processErrors(errors);
+        verify(itemGroup).setName(name);
+        verify(itemGroupRepository).save(itemGroup);
+        verifyNoMoreInteractions(itemGroupRepository, validationHelper);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testUpdateNameForIllegalUser() {
+        Long id = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        String name = "name";
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.of(itemGroup));
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemGroupService.updateName(id, name);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testUpdateNameForMissingEntry() {
+        Long id = 1L;
+        String name = "name";
+
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.empty());
+
+        itemGroupService.updateName(id, name);
+    }
+
+    @Test
+    public void testUpdateDescription() {
+        Long id = 1L;
+        Long userId = 2L;
+        String description = "description";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.of(itemGroup));
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemGroupRepository.save(itemGroup)).thenReturn(itemGroup);
+
+        itemGroupService.updateDescription(id, description);
+
+        verify(itemGroupRepository).findById(id);
+        verify(itemGroup).setDescription(description);
+        verify(itemGroupRepository).save(itemGroup);
+        verifyNoMoreInteractions(itemGroupRepository);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testUpdateDescriptionForIllegalUser() {
+        Long id = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        String description = "description";
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.of(itemGroup));
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemGroupService.updateDescription(id, description);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testUpdateDescriptionForMissingEntry() {
+        Long id = 1L;
+        String description = "description";
+
+        when(itemGroupRepository.findById(id)).thenReturn(Optional.empty());
+
+        itemGroupService.updateDescription(id, description);
     }
 }
