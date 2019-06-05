@@ -1,0 +1,41 @@
+databaseChangeLog:
+- changeSet:
+    id: 1559754230671-2
+    author: albvs (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: item_id
+            type: BIGINT
+        - column:
+            name: sources
+            type: BIGINT
+        tableName: item_sources
+- changeSet:
+    id: 1559754230671-3
+    author: albvs (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: item_id
+        baseTableName: item_sources
+        constraintName: FK612laru87joxu29emfututxm8
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: item
+        validate: true
+- changeSet:
+    id: 1559754230671-1
+    author: albvs (generated)
+    changes:
+    - dropUniqueConstraint:
+        constraintName: UK_jxspkjithlkrckvx5bpxwksie
+        tableName: item_images
+    - addUniqueConstraint:
+        columnNames: images_object_id
+        constraintName: UK_jxspkjithlkrckvx5bpxwksie
+        tableName: item_images
+
