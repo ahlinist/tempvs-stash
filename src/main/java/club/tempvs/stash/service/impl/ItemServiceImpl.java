@@ -17,6 +17,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -63,6 +64,14 @@ public class ItemServiceImpl implements ItemService {
 
         item.setItemGroup(itemGroup);
         return save(item);
+    }
+
+    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    public List<Item> getItems(Long itemGroupId) {
+        return itemRepository.findAllByItemGroupId(itemGroupId);
     }
 
     @HystrixCommand(commandProperties = {

@@ -1,7 +1,11 @@
 package club.tempvs.stash;
 
 import club.tempvs.stash.dao.ItemGroupRepository;
+import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.dao.UserRepository;
+import club.tempvs.stash.domain.Item;
+import club.tempvs.stash.domain.Item.Period;
+import club.tempvs.stash.domain.Item.Classification;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.UserInfoDto;
@@ -13,11 +17,16 @@ public class EntityHelper {
 
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
     private final ItemGroupRepository itemGroupRepository;
 
-    public EntityHelper(ObjectMapper objectMapper, UserRepository userRepository, ItemGroupRepository itemGroupRepository) {
+    public EntityHelper(ObjectMapper objectMapper,
+                        UserRepository userRepository,
+                        ItemRepository itemRepository,
+                        ItemGroupRepository itemGroupRepository) {
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
         this.itemGroupRepository = itemGroupRepository;
     }
 
@@ -42,5 +51,15 @@ public class EntityHelper {
         itemGroup.setDescription(description);
         itemGroup.setOwner(user);
         return itemGroupRepository.saveAndFlush(itemGroup);
+    }
+
+    public Item createItem(ItemGroup itemGroup, String name, String description, Classification classification, Period period) {
+        Item item = new Item();
+        item.setName(name);
+        item.setDescription(description);
+        item.setClassification(classification);
+        item.setPeriod(period);
+        item.setItemGroup(itemGroup);
+        return itemRepository.saveAndFlush(item);
     }
 }

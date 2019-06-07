@@ -15,6 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -78,5 +81,20 @@ public class ItemServiceTest {
         when(owner.getId()).thenReturn(ownerId);
 
         itemService.create(groupId, item);
+    }
+
+    @Test
+    public void testGetItems() {
+        Long groupId = 1L;
+        List<Item> items = Arrays.asList(item, item, item);
+
+        when(itemRepository.findAllByItemGroupId(groupId)).thenReturn(items);
+
+        List<Item> result = itemService.getItems(groupId);
+
+        verify(itemRepository).findAllByItemGroupId(groupId);
+        verifyNoMoreInteractions(itemRepository);
+
+        assertEquals("A list of items is returned", items, result);
     }
 }

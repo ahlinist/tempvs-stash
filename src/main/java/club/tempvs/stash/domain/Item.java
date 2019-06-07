@@ -2,6 +2,7 @@ package club.tempvs.stash.domain;
 
 import club.tempvs.stash.dto.ItemDto;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Item {
 
     @Id

@@ -9,6 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -39,5 +42,22 @@ public class ItemControllerTest {
         verifyNoMoreInteractions(itemService);
 
         assertEquals("GroupDto is returned", itemDto, result);
+    }
+
+    @Test
+    public void testgetItems() {
+        Long itemGroupId = 1L;
+        List<Item> items = Arrays.asList(item, item, item);
+        List<ItemDto> itemDtos = Arrays.asList(itemDto, itemDto, itemDto);
+
+        when(itemService.getItems(itemGroupId)).thenReturn(items);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        List<ItemDto> result = itemController.getItems(itemGroupId);
+
+        verify(itemService).getItems(itemGroupId);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("A list of itemDtos is returned", itemDtos, result);
     }
 }
