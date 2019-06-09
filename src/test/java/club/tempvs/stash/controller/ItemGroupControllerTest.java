@@ -47,12 +47,14 @@ public class ItemGroupControllerTest {
     @Test
     public void testFindGroupsByUserId() {
         Long userId = 1L;
+        int page = 0;
+        int size = 40;
 
-        when(itemGroupService.getStash(userId)).thenReturn(stashDto);
+        when(itemGroupService.getStash(userId, page, size)).thenReturn(stashDto);
 
-        StashDto result = itemGroupController.findGroupsByUserId(userId);
+        StashDto result = itemGroupController.findGroupsByUserId(userId, page, size);
 
-        verify(itemGroupService).getStash(userId);
+        verify(itemGroupService).getStash(userId, page, size);
         verifyNoMoreInteractions(itemGroupService);
 
         assertEquals("List of groups is returned", stashDto, result);

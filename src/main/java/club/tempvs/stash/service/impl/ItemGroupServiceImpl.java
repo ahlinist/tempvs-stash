@@ -15,6 +15,8 @@ import club.tempvs.stash.util.ValidationHelper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,11 +52,12 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     }
 
     @Override
-    public StashDto getStash(Long userId) {
+    public StashDto getStash(Long userId, int page, int size) {
         Long id = Optional.ofNullable(userId)
                 .orElseGet(() -> userHolder.getUser().getId());
         User user = userService.getById(id);
-        List<ItemGroup> groups = findGroupsByUser(user);
+        Pageable pageable = PageRequest.of(page, size);
+        List<ItemGroup> groups = findGroupsByUser(user, pageable);
         return new StashDto(user, groups);
     }
 
@@ -105,8 +108,8 @@ public class ItemGroupServiceImpl implements ItemGroupService {
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
-    private List<ItemGroup> findGroupsByUser(User user) {
-        return itemGroupRepository.findAllByOwner(user);
+    private List<ItemGroup> findGroupsByUser(User user, Pageable pageable) {
+        return itemGroupRepository.findAllByOwner(user, pageable);
     }
 
     @HystrixCommand(commandProperties = {

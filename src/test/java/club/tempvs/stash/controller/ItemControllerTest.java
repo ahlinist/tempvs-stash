@@ -49,13 +49,15 @@ public class ItemControllerTest {
         Long itemGroupId = 1L;
         List<Item> items = Arrays.asList(item, item, item);
         List<ItemDto> itemDtos = Arrays.asList(itemDto, itemDto, itemDto);
+        int page = 0;
+        int size = 40;
 
-        when(itemService.getItems(itemGroupId)).thenReturn(items);
+        when(itemService.getItems(itemGroupId, page, size)).thenReturn(items);
         when(item.toItemDto()).thenReturn(itemDto);
 
-        List<ItemDto> result = itemController.getItems(itemGroupId);
+        List<ItemDto> result = itemController.getItems(itemGroupId, page, size);
 
-        verify(itemService).getItems(itemGroupId);
+        verify(itemService).getItems(itemGroupId, page, size);
         verifyNoMoreInteractions(itemService);
 
         assertEquals("A list of itemDtos is returned", itemDtos, result);

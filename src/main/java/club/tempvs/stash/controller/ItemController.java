@@ -8,12 +8,15 @@ import club.tempvs.stash.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/group")
 public class ItemController {
+
+    private static final int MAX_SIZE_VALUE = 40;
 
     private final ItemService itemService;
 
@@ -24,8 +27,10 @@ public class ItemController {
     }
 
     @GetMapping("/{itemGroupId}/item")
-    public List<ItemDto> getItems(@PathVariable Long itemGroupId) {
-        List<Item> items = itemService.getItems(itemGroupId);
+    public List<ItemDto> getItems(@PathVariable Long itemGroupId,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @Max(MAX_SIZE_VALUE) @RequestParam(defaultValue = "40") int size) {
+        List<Item> items = itemService.getItems(itemGroupId, page, size);
         return items.stream()
                 .map(Item::toItemDto)
                 .collect(toList());

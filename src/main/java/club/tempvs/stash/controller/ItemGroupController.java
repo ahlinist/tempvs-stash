@@ -7,12 +7,15 @@ import club.tempvs.stash.service.ItemGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/group")
 @RequiredArgsConstructor
 public class ItemGroupController {
+
+    private static final int MAX_SIZE_VALUE = 40;
 
     private final ItemGroupService itemGroupService;
 
@@ -23,8 +26,10 @@ public class ItemGroupController {
     }
 
     @GetMapping
-    public StashDto findGroupsByUserId(@RequestParam(required = false) Long userId) {
-        return itemGroupService.getStash(userId);
+    public StashDto findGroupsByUserId(@RequestParam(required = false) Long userId,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @Max(MAX_SIZE_VALUE) @RequestParam(defaultValue = "40") int size) {
+        return itemGroupService.getStash(userId, page, size);
     }
 
     @GetMapping("/{id}")

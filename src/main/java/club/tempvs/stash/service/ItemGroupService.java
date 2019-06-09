@@ -7,7 +7,7 @@ public interface ItemGroupService {
 
     ItemGroup create(ItemGroup itemGroup);
 
-    StashDto getStash(Long userId);
+    StashDto getStash(Long userId, int page, int size);
 
     ItemGroup getById(Long id);
 

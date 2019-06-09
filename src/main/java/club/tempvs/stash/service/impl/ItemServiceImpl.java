@@ -15,6 +15,8 @@ import club.tempvs.stash.util.ValidationHelper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -70,8 +72,9 @@ public class ItemServiceImpl implements ItemService {
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
-    public List<Item> getItems(Long itemGroupId) {
-        return itemRepository.findAllByItemGroupId(itemGroupId);
+    public List<Item> getItems(Long itemGroupId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return itemRepository.findAllByItemGroupId(itemGroupId, pageable);
     }
 
     @HystrixCommand(commandProperties = {

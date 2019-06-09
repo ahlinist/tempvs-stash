@@ -8,5 +8,5 @@ public interface ItemService {
 
     Item create(Long itemGroupId, Item item);
 
-    List<Item> getItems(Long itemGroupId);
+    List<Item> getItems(Long itemGroupId, int page, int size);
 }

@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -87,12 +89,15 @@ public class ItemServiceTest {
     public void testGetItems() {
         Long groupId = 1L;
         List<Item> items = Arrays.asList(item, item, item);
+        int page = 0;
+        int size = 40;
+        Pageable pageable = PageRequest.of(page, size);
 
-        when(itemRepository.findAllByItemGroupId(groupId)).thenReturn(items);
+        when(itemRepository.findAllByItemGroupId(groupId, pageable)).thenReturn(items);
 
-        List<Item> result = itemService.getItems(groupId);
+        List<Item> result = itemService.getItems(groupId, page, size);
 
-        verify(itemRepository).findAllByItemGroupId(groupId);
+        verify(itemRepository).findAllByItemGroupId(groupId, pageable);
         verifyNoMoreInteractions(itemRepository);
 
         assertEquals("A list of items is returned", items, result);

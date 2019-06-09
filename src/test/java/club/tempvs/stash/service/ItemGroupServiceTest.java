@@ -17,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -84,14 +86,17 @@ public class ItemGroupServiceTest {
         Long userId = 1L;
         List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
         StashDto stashDto = new StashDto(user, itemGroups);
+        int page = 0;
+        int size = 40;
+        Pageable pageable = PageRequest.of(page, size);
 
         when(userService.getById(userId)).thenReturn(user);
-        when(itemGroupRepository.findAllByOwner(user)).thenReturn(itemGroups);
+        when(itemGroupRepository.findAllByOwner(user, pageable)).thenReturn(itemGroups);
 
-        StashDto result = itemGroupService.getStash(userId);
+        StashDto result = itemGroupService.getStash(userId, page, size);
 
         verify(userService).getById(userId);
-        verify(itemGroupRepository).findAllByOwner(user);
+        verify(itemGroupRepository).findAllByOwner(user, pageable);
         verifyNoMoreInteractions(itemGroupRepository, userService);
 
         assertEquals("StashDto is returned", stashDto, result);
@@ -102,16 +107,19 @@ public class ItemGroupServiceTest {
         Long userId = 1L;
         List<ItemGroup> itemGroups = Arrays.asList(itemGroup, itemGroup);
         StashDto stashDto = new StashDto(user, itemGroups);
+        int page = 0;
+        int size = 40;
+        Pageable pageable = PageRequest.of(page, size);
 
         when(userHolder.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
         when(userService.getById(userId)).thenReturn(user);
-        when(itemGroupRepository.findAllByOwner(user)).thenReturn(itemGroups);
+        when(itemGroupRepository.findAllByOwner(user, pageable)).thenReturn(itemGroups);
 
-        StashDto result = itemGroupService.getStash(null);
+        StashDto result = itemGroupService.getStash(null, page, size);
 
         verify(userService).getById(userId);
-        verify(itemGroupRepository).findAllByOwner(user);
+        verify(itemGroupRepository).findAllByOwner(user, pageable);
         verifyNoMoreInteractions(itemGroupRepository, userService);
 
         assertEquals("StashDto is returned", stashDto, result);
