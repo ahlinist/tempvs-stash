@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -101,5 +103,28 @@ public class ItemServiceTest {
         verifyNoMoreInteractions(itemRepository);
 
         assertEquals("A list of items is returned", items, result);
+    }
+
+    @Test
+    public void testGetItem() {
+        Long itemId = 1L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        Item result = itemService.getItem(itemId);
+
+        verify(itemRepository).findById(itemId);
+        verifyNoMoreInteractions(itemRepository);
+
+        assertEquals("Item object is returned", item, result);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetItemForMissingOne() {
+        Long itemId = 1L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.getItem(itemId);
     }
 }

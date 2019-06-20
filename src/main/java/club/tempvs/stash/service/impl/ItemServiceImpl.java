@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -66,6 +67,18 @@ public class ItemServiceImpl implements ItemService {
 
         item.setItemGroup(itemGroup);
         return save(item);
+    }
+
+    public Item getItem(Long id) {
+        return findItemById(id);
+    }
+
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    private Item findItemById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void testgetItems() {
+    public void testGetItems() {
         Long itemGroupId = 1L;
         List<Item> items = Arrays.asList(item, item, item);
         List<ItemDto> itemDtos = Arrays.asList(itemDto, itemDto, itemDto);
@@ -61,5 +61,21 @@ public class ItemControllerTest {
         verifyNoMoreInteractions(itemService);
 
         assertEquals("A list of itemDtos is returned", itemDtos, result);
+    }
+
+    @Test
+    public void testGetItem() {
+        Long itemGroupId = 1L;
+        Long itemId = 2L;
+
+        when(itemService.getItem(itemId)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.getItem(itemGroupId, itemId);
+
+        verify(itemService).getItem(itemId);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("An itemDto is returned", itemDto, result);
     }
 }

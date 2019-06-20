@@ -35,4 +35,10 @@ public class ItemController {
                 .map(Item::toItemDto)
                 .collect(toList());
     }
+
+    @GetMapping("/{itemGroupId}/item/{itemId}")
+    public ItemDto getItem(@PathVariable Long itemGroupId, @PathVariable Long itemId) {
+        Item item = itemService.getItem(itemId);
+        return item.toItemDto();
+    }
 }
