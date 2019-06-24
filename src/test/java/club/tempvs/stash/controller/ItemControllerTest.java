@@ -65,13 +65,12 @@ public class ItemControllerTest {
 
     @Test
     public void testGetItem() {
-        Long itemGroupId = 1L;
         Long itemId = 2L;
 
         when(itemService.getItem(itemId)).thenReturn(item);
         when(item.toItemDto()).thenReturn(itemDto);
 
-        ItemDto result = itemController.getItem(itemGroupId, itemId);
+        ItemDto result = itemController.getItem(itemId);
 
         verify(itemService).getItem(itemId);
         verifyNoMoreInteractions(itemService);

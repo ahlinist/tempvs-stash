@@ -13,20 +13,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/group")
+@RequestMapping("/api")
 public class ItemController {
 
     private static final int MAX_SIZE_VALUE = 40;
 
     private final ItemService itemService;
 
-    @PostMapping("/{itemGroupId}/item")
+    @PostMapping("/group/{itemGroupId}/item")
     public ItemDto create(@PathVariable Long itemGroupId, @RequestBody ItemDto itemDto) {
         Item item = itemService.create(itemGroupId, itemDto.toItem());
         return item.toItemDto();
     }
 
-    @GetMapping("/{itemGroupId}/item")
+    @GetMapping("/group/{itemGroupId}/item")
     public List<ItemDto> getItems(@PathVariable Long itemGroupId,
                                   @RequestParam(defaultValue = "0") int page,
                                   @Max(MAX_SIZE_VALUE) @RequestParam(defaultValue = "40") int size) {
@@ -36,8 +36,8 @@ public class ItemController {
                 .collect(toList());
     }
 
-    @GetMapping("/{itemGroupId}/item/{itemId}")
-    public ItemDto getItem(@PathVariable Long itemGroupId, @PathVariable Long itemId) {
+    @GetMapping("/item/{itemId}")
+    public ItemDto getItem(@PathVariable Long itemId) {
         Item item = itemService.getItem(itemId);
         return item.toItemDto();
     }

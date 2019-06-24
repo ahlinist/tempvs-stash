@@ -134,7 +134,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(get("/api/group/" + itemGroup.getId() + "/item/" + item.getId())
+        mvc.perform(get("/api/item/" + item.getId())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
