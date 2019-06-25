@@ -6,6 +6,7 @@ import static java.util.Objects.isNull;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
+import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
@@ -71,6 +72,41 @@ public class ItemServiceImpl implements ItemService {
 
     public Item getItem(Long id) {
         return findItemById(id);
+    }
+
+    @Override
+    public Item updateName(Long id, String name) {
+        User user = userHolder.getUser();
+        Item item = findItemById(id);
+        User owner = item.getItemGroup().getOwner();
+
+        if (!Objects.equals(user.getId(), owner.getId())) {
+            throw new ForbiddenException("Only owner can change item name");
+        }
+
+        ErrorsDto errorsDto = validationHelper.getErrors();
+
+        if (isBlank(name)) {
+            validationHelper.addError(errorsDto, NAME_FIELD, NAME_MISSING_ERROR);
+        }
+
+        validationHelper.processErrors(errorsDto);
+        item.setName(name);
+        return save(item);
+    }
+
+    @Override
+    public Item updateDescription(Long id, String description) {
+        User user = userHolder.getUser();
+        Item item = findItemById(id);
+        User owner = item.getItemGroup().getOwner();
+
+        if (!Objects.equals(user.getId(), owner.getId())) {
+            throw new ForbiddenException("Only owner can change group name");
+        }
+
+        item.setDescription(description);
+        return save(item);
     }
 
     @HystrixCommand(commandProperties = {

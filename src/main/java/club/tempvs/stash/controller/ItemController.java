@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,5 +41,17 @@ public class ItemController {
     public ItemDto getItem(@PathVariable Long itemId) {
         Item item = itemService.getItem(itemId);
         return item.toItemDto();
+    }
+
+    @PatchMapping("/item/{id}/name")
+    public ItemDto updateName(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        return itemService.updateName(id, payload.get("name"))
+                .toItemDto();
+    }
+
+    @PatchMapping("/item/{id}/description")
+    public ItemDto updateDescription(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        return itemService.updateDescription(id, payload.get("description"))
+                .toItemDto();
     }
 }

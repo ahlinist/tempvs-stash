@@ -127,4 +127,105 @@ public class ItemServiceTest {
 
         itemService.getItem(itemId);
     }
+
+    @Test
+    public void testUpdateName() {
+        Long id = 1L;
+        Long userId = 2L;
+        String name = "name";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(validationHelper.getErrors()).thenReturn(errors);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        itemService.updateName(id, name);
+
+        verify(itemRepository).findById(id);
+        verify(validationHelper).getErrors();
+        verify(validationHelper).processErrors(errors);
+        verify(item).setName(name);
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository, validationHelper);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testUpdateNameForIllegalUser() {
+        Long id = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        String name = "name";
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemService.updateName(id, name);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testUpdateNameForMissingEntry() {
+        Long id = 1L;
+        String name = "name";
+
+        when(itemRepository.findById(id)).thenReturn(Optional.empty());
+
+        itemService.updateName(id, name);
+    }
+
+    @Test
+    public void testUpdateDescription() {
+        Long id = 1L;
+        Long userId = 2L;
+        String description = "description";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        itemService.updateDescription(id, description);
+
+        verify(itemRepository).findById(id);
+        verify(item).setDescription(description);
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testUpdateDescriptionForIllegalUser() {
+        Long id = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        String description = "description";
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemService.updateDescription(id, description);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testUpdateDescriptionForMissingEntry() {
+        Long id = 1L;
+        String description = "description";
+
+        when(itemRepository.findById(id)).thenReturn(Optional.empty());
+
+        itemService.updateDescription(id, description);
+    }
 }

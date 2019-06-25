@@ -11,4 +11,8 @@ public interface ItemService {
     List<Item> getItems(Long itemGroupId, int page, int size);
 
     Item getItem(Long id);
+
+    Item updateName(Long id, String name);
+
+    Item updateDescription(Long id, String name);
 }

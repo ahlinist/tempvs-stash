@@ -3,6 +3,7 @@ package club.tempvs.stash.controller;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.dto.ItemDto;
 import club.tempvs.stash.service.ItemService;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -76,5 +77,37 @@ public class ItemControllerTest {
         verifyNoMoreInteractions(itemService);
 
         assertEquals("An itemDto is returned", itemDto, result);
+    }
+
+    @Test
+    public void testUpdateName() {
+        Long id = 1L;
+        String name = "name";
+
+        when(itemService.updateName(id, name)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.updateName(id, ImmutableMap.of("name", name));
+
+        verify(itemService).updateName(id, name);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("ItemGroupDto is returned", itemDto, result);
+    }
+
+    @Test
+    public void testUpdateDescription() {
+        Long id = 1L;
+        String description = "description";
+
+        when(itemService.updateDescription(id, description)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.updateDescription(id, ImmutableMap.of("description", description));
+
+        verify(itemService).updateDescription(id, description);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("ItemGroupDto is returned", itemDto, result);
     }
 }
