@@ -1,6 +1,7 @@
 package club.tempvs.stash.service;
 
 import club.tempvs.stash.domain.Item;
+import club.tempvs.stash.dto.ImageDto;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface ItemService {
     Item updateName(Long id, String name);
 
     Item updateDescription(Long id, String name);
+
+    Item addImage(Long itemId, ImageDto imageDto);
 }

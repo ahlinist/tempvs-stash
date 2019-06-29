@@ -1,10 +1,13 @@
 package club.tempvs.stash.service;
 
+import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dao.ItemRepository;
+import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
+import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.impl.ItemServiceImpl;
@@ -40,6 +43,8 @@ public class ItemServiceTest {
     @Mock
     private UserHolder userHolder;
     @Mock
+    private ImageClient imageClient;
+    @Mock
     private Item item;
     @Mock
     private ItemGroup itemGroup;
@@ -47,6 +52,10 @@ public class ItemServiceTest {
     private ErrorsDto errors;
     @Mock
     private User user, owner;
+    @Mock
+    private Image image;
+    @Mock
+    private ImageDto imageDto;
 
     @Test
     public void testCreateItem() {
@@ -227,5 +236,56 @@ public class ItemServiceTest {
         when(itemRepository.findById(id)).thenReturn(Optional.empty());
 
         itemService.updateDescription(id, description);
+    }
+
+    @Test
+    public void addImage() {
+        Long itemId = 1L;
+        Long userId = 2L;
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(imageClient.store(imageDto)).thenReturn(imageDto);
+        when(imageDto.toImage()).thenReturn(image);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        Item result = itemService.addImage(itemId, imageDto);
+
+        verify(itemRepository).findById(itemId);
+        verify(imageClient).store(imageDto);
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository, imageClient);
+
+        assertEquals("Item is returned back", item, result);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void addImageForWrongUser() {
+        Long itemId = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemService.addImage(itemId, imageDto);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void addImageForMissingItem() {
+        Long itemId = 1L;
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.addImage(itemId, imageDto);
     }
 }

@@ -45,6 +45,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation "org.postgresql:postgresql:${postgresVersion}"
 	implementation "org.liquibase:liquibase-core:${liquibaseVersion}" //to fire changelog migration on startup
 	//lombok

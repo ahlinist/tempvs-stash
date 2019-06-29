@@ -3,11 +3,13 @@ package club.tempvs.stash.service.impl;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
+import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.ItemGroupService;
@@ -20,9 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemGroupService itemGroupService;
     private final ValidationHelper validationHelper;
     private final UserHolder userHolder;
+    private final ImageClient imageClient;
 
     @Override
     public Item create(Long itmGroupId, Item item) {
@@ -106,6 +107,23 @@ public class ItemServiceImpl implements ItemService {
         }
 
         item.setDescription(description);
+        return save(item);
+    }
+
+    @Override
+    public Item addImage(Long itemId, ImageDto imageDto) {
+        User user = userHolder.getUser();
+        Item item = findItemById(itemId);
+        Long ownerId = item.getItemGroup()
+                .getOwner()
+                .getId();
+
+        if (!Objects.equals(ownerId, user.getId())) {
+            throw new ForbiddenException("Access denied");
+        }
+
+        ImageDto result = imageClient.store(imageDto);
+        item.getImages().add(result.toImage());
         return save(item);
     }
 

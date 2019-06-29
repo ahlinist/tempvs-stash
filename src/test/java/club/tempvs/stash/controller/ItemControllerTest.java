@@ -1,6 +1,7 @@
 package club.tempvs.stash.controller;
 
 import club.tempvs.stash.domain.Item;
+import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.dto.ItemDto;
 import club.tempvs.stash.service.ItemService;
 import com.google.common.collect.ImmutableMap;
@@ -26,6 +27,8 @@ public class ItemControllerTest {
     private Item item;
     @Mock
     private ItemDto itemDto;
+    @Mock
+    private ImageDto imageDto;
     @Mock
     private ItemService itemService;
 
@@ -109,5 +112,20 @@ public class ItemControllerTest {
         verifyNoMoreInteractions(itemService);
 
         assertEquals("ItemGroupDto is returned", itemDto, result);
+    }
+
+    @Test
+    public void testAddImage() {
+        Long id = 1L;
+
+        when(itemService.addImage(id, imageDto)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.addImage(id, imageDto);
+
+        verify(itemService).addImage(id, imageDto);
+        verifyNoMoreInteractions(itemService, imageDto);
+
+        assertEquals("ImageDto is returned back", itemDto, result);
     }
 }

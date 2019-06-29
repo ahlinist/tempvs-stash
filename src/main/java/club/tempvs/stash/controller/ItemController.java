@@ -3,6 +3,7 @@ package club.tempvs.stash.controller;
 import static java.util.stream.Collectors.toList;
 
 import club.tempvs.stash.domain.Item;
+import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.dto.ItemDto;
 import club.tempvs.stash.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +54,10 @@ public class ItemController {
     public ItemDto updateDescription(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         return itemService.updateDescription(id, payload.get("description"))
                 .toItemDto();
+    }
+
+    @PostMapping("/item/{itemId}/images")
+    public ItemDto addImage(@PathVariable Long itemId, @RequestBody ImageDto imageDto) {
+        return itemService.addImage(itemId, imageDto).toItemDto();
     }
 }
