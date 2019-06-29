@@ -239,7 +239,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void addImage() {
+    public void testAddImage() {
         Long itemId = 1L;
         Long userId = 2L;
 
@@ -263,7 +263,7 @@ public class ItemServiceTest {
     }
 
     @Test(expected = ForbiddenException.class)
-    public void addImageForWrongUser() {
+    public void testAddImageForWrongUser() {
         Long itemId = 1L;
         Long userId = 2L;
         Long wrongUserId = 3L;
@@ -280,12 +280,64 @@ public class ItemServiceTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void addImageForMissingItem() {
+    public void testAddImageForMissingItem() {
         Long itemId = 1L;
 
         when(userHolder.getUser()).thenReturn(user);
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
         itemService.addImage(itemId, imageDto);
+    }
+
+    @Test
+    public void testDeleteImage() {
+        Long itemId = 1L;
+        Long userId = 2L;
+        String objectId = "objectId";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        Item result = itemService.deleteImage(itemId, objectId);
+
+        verify(itemRepository).findById(itemId);
+        verify(imageClient).delete(objectId);
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository, imageClient);
+
+        assertEquals("Item is returned back", item, result);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testDeleteImageForWrongUser() {
+        Long itemId = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+        String objectId = "objectId";
+
+        when(userHolder.getUser()).thenReturn(wrongUser);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        itemService.deleteImage(itemId, objectId);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testDeleteImageForMissingItem() {
+        Long itemId = 1L;
+        String objectId = "objectId";
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.deleteImage(itemId, objectId);
     }
 }

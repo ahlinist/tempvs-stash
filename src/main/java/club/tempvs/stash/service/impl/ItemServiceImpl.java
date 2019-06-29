@@ -1,10 +1,12 @@
 package club.tempvs.stash.service.impl;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dao.ItemRepository;
+import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
@@ -125,6 +127,27 @@ public class ItemServiceImpl implements ItemService {
         ImageDto result = imageClient.store(imageDto);
         item.getImages().add(result.toImage());
         return save(item);
+    }
+
+    @Override
+    public Item deleteImage(Long itemId, String objectId) {
+        User user = userHolder.getUser();
+        Item item = findItemById(itemId);
+        Long ownerId = item.getItemGroup()
+                .getOwner()
+                .getId();
+
+        if (!Objects.equals(ownerId, user.getId())) {
+            throw new ForbiddenException("Access denied");
+        }
+
+        List<Image> images = item.getImages().stream()
+                .filter(image -> !image.getObjectId().equals(objectId))
+                .collect(toList());
+        item.setImages(images);
+        Item persistentItem = save(item);
+        imageClient.delete(objectId);
+        return persistentItem;
     }
 
     @HystrixCommand(commandProperties = {

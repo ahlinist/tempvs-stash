@@ -60,4 +60,10 @@ public class ItemController {
     public ItemDto addImage(@PathVariable Long itemId, @RequestBody ImageDto imageDto) {
         return itemService.addImage(itemId, imageDto).toItemDto();
     }
+
+
+    @DeleteMapping("/item/{itemId}/images/{objectId}")
+    public ItemDto deleteImage(@PathVariable Long itemId, @PathVariable String objectId) {
+        return itemService.deleteImage(itemId, objectId).toItemDto();
+    }
 }

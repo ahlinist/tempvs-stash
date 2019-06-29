@@ -128,4 +128,21 @@ public class ItemControllerTest {
 
         assertEquals("ImageDto is returned back", itemDto, result);
     }
+
+
+    @Test
+    public void testDeleteImage() {
+        Long itemId = 1L;
+        String objectId = "objectId";
+
+        when(itemService.deleteImage(itemId, objectId)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.deleteImage(itemId, objectId);
+
+        verify(itemService).deleteImage(itemId, objectId);
+        verifyNoMoreInteractions(itemService, imageDto);
+
+        assertEquals("ImageDto is returned back", itemDto, result);
+    }
 }
