@@ -145,4 +145,14 @@ public class ItemControllerTest {
 
         assertEquals("ImageDto is returned back", itemDto, result);
     }
+
+    @Test
+    public void testDeleteItem() {
+        Long itemId = 1L;
+
+        itemController.delete(itemId);
+
+        verify(itemService).delete(itemId);
+        verifyNoMoreInteractions(itemService);
+    }
 }

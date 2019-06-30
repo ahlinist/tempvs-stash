@@ -4,7 +4,7 @@ import club.tempvs.stash.dto.ImageDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @FeignClient("image")
 @RequestMapping("/api/image")
@@ -14,7 +14,7 @@ public interface ImageClient {
     ImageDto store(@RequestBody ImageDto payload);
 
     @PostMapping("/delete")
-    void delete(@RequestBody List<String> objectIds);
+    void delete(@RequestBody Set<String> objectIds);
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable("id") String id);

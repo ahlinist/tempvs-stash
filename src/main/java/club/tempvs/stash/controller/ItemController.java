@@ -66,4 +66,9 @@ public class ItemController {
     public ItemDto deleteImage(@PathVariable Long itemId, @PathVariable String objectId) {
         return itemService.deleteImage(itemId, objectId).toItemDto();
     }
+
+    @DeleteMapping("/item/{id}")
+    public void delete(@PathVariable Long id) {
+        itemService.delete(id);
+    }
 }

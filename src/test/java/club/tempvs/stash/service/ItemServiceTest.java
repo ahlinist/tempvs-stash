@@ -12,6 +12,7 @@ import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.impl.ItemServiceImpl;
 import club.tempvs.stash.util.ValidationHelper;
+import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,10 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -283,7 +281,6 @@ public class ItemServiceTest {
     public void testAddImageForMissingItem() {
         Long itemId = 1L;
 
-        when(userHolder.getUser()).thenReturn(user);
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
         itemService.addImage(itemId, imageDto);
@@ -335,9 +332,58 @@ public class ItemServiceTest {
         Long itemId = 1L;
         String objectId = "objectId";
 
-        when(userHolder.getUser()).thenReturn(user);
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
         itemService.deleteImage(itemId, objectId);
+    }
+
+    @Test
+    public void testDeleteItem() {
+        Long itemId = 1L;
+        Long userId = 2L;
+        String objectId = "objectId1";
+        List<Image> images = Arrays.asList(image);
+        Set<String> objectIds = ImmutableSet.of(objectId);
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(user);
+        when(item.getImages()).thenReturn(images);
+        when(image.getObjectId()).thenReturn(objectId);
+
+        itemService.delete(itemId);
+
+        verify(itemRepository).findById(itemId);
+        verify(imageClient).delete(objectIds);
+        verify(itemRepository).delete(item);
+        verifyNoMoreInteractions(itemRepository, imageClient);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testDeleteItemForMissingItem() {
+        Long itemId = 1L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.delete(itemId);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testDeleteItemForWrongUser() {
+        Long itemId = 1L;
+        Long userId = 2L;
+        Long wrongUserId = 3L;
+        User wrongUser = new User();
+        wrongUser.setId(wrongUserId);
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(wrongUser);
+
+        itemService.delete(itemId);
     }
 }

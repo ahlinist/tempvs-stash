@@ -20,4 +20,6 @@ public interface ItemService {
     Item addImage(Long itemId, ImageDto imageDto);
 
     Item deleteImage(Long itemId, String objectId);
+
+    void delete(Long id);
 }

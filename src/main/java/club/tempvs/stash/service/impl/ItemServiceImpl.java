@@ -1,6 +1,7 @@
 package club.tempvs.stash.service.impl;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
@@ -62,12 +63,7 @@ public class ItemServiceImpl implements ItemService {
         validationHelper.processErrors(errors);
 
         ItemGroup itemGroup = itemGroupService.getById(itmGroupId);
-        Long userId = userHolder.getUser().getId();
-        Long groupOwnerId = itemGroup.getOwner().getId();
-
-        if (!Objects.equals(userId, groupOwnerId)) {
-            throw new ForbiddenException("Item group does not belong to a current user");
-        }
+        validateOwner(itemGroup);
 
         item.setItemGroup(itemGroup);
         return save(item);
@@ -79,13 +75,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateName(Long id, String name) {
-        User user = userHolder.getUser();
         Item item = findItemById(id);
-        User owner = item.getItemGroup().getOwner();
-
-        if (!Objects.equals(user.getId(), owner.getId())) {
-            throw new ForbiddenException("Only owner can change item name");
-        }
+        validateOwner(item);
 
         ErrorsDto errorsDto = validationHelper.getErrors();
 
@@ -100,13 +91,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateDescription(Long id, String description) {
-        User user = userHolder.getUser();
         Item item = findItemById(id);
-        User owner = item.getItemGroup().getOwner();
-
-        if (!Objects.equals(user.getId(), owner.getId())) {
-            throw new ForbiddenException("Only owner can change group name");
-        }
+        validateOwner(item);
 
         item.setDescription(description);
         return save(item);
@@ -114,15 +100,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item addImage(Long itemId, ImageDto imageDto) {
-        User user = userHolder.getUser();
         Item item = findItemById(itemId);
-        Long ownerId = item.getItemGroup()
-                .getOwner()
-                .getId();
-
-        if (!Objects.equals(ownerId, user.getId())) {
-            throw new ForbiddenException("Access denied");
-        }
+        validateOwner(item);
 
         ImageDto result = imageClient.store(imageDto);
         item.getImages().add(result.toImage());
@@ -131,15 +110,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item deleteImage(Long itemId, String objectId) {
-        User user = userHolder.getUser();
         Item item = findItemById(itemId);
-        Long ownerId = item.getItemGroup()
-                .getOwner()
-                .getId();
-
-        if (!Objects.equals(ownerId, user.getId())) {
-            throw new ForbiddenException("Access denied");
-        }
+        validateOwner(item);
 
         List<Image> images = item.getImages().stream()
                 .filter(image -> !image.getObjectId().equals(objectId))
@@ -148,6 +120,34 @@ public class ItemServiceImpl implements ItemService {
         Item persistentItem = save(item);
         imageClient.delete(objectId);
         return persistentItem;
+    }
+
+    @Override
+    public void delete(Long itemId) {
+        Item item = findItemById(itemId);
+        validateOwner(item);
+
+        Set<String> objectIds = item.getImages()
+                .stream()
+                .map(Image::getObjectId)
+                .collect(toSet());
+        imageClient.delete(objectIds);
+        delete(item);
+    }
+
+    private void validateOwner(ItemGroup itemGroup) {
+        User user = userHolder.getUser();
+        Long ownerId = itemGroup
+                .getOwner()
+                .getId();
+
+        if (!Objects.equals(ownerId, user.getId())) {
+            throw new ForbiddenException("Access denied");
+        }
+    }
+
+    private void validateOwner(Item item) {
+        validateOwner(item.getItemGroup());
     }
 
     @HystrixCommand(commandProperties = {
@@ -172,5 +172,12 @@ public class ItemServiceImpl implements ItemService {
     })
     private Item save(Item item) {
         return itemRepository.save(item);
+    }
+
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    private void delete(Item item) {
+        itemRepository.delete(item);
     }
 }
