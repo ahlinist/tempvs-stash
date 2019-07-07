@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'org.springframework.boot' version '2.1.6.RELEASE'
 	id 'org.liquibase.gradle' version '2.0.1'
 	id 'java'
 }
@@ -21,7 +21,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', 'Greenwich.SR1')
+	set('springCloudVersion', 'Greenwich.SR2')
 }
 
 liquibase {
@@ -46,6 +46,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
 	implementation "org.postgresql:postgresql:${postgresVersion}"
 	implementation "org.liquibase:liquibase-core:${liquibaseVersion}" //to fire changelog migration on startup
 	//lombok
@@ -60,8 +62,7 @@ dependencies {
 	//testing
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 	testImplementation 'com.h2database:h2:1.4.194'
-	//amqp
-	implementation 'com.rabbitmq:amqp-client:3.3.4'
+	testImplementation  'org.springframework.cloud:spring-cloud-stream-test-support'
 }
 
 dependencyManagement {

@@ -300,6 +300,7 @@ public class ItemControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
+                     .andExpect(status().isOk())
                     .andExpect(jsonPath("name", is(itemName)))
                     .andExpect(jsonPath("description", is(itemDescription)))
                     .andExpect(jsonPath("classification", is("ARMOR")))
@@ -331,7 +332,7 @@ public class ItemControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
-                .andExpect(status().isOk())
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("id", isA(Integer.TYPE)))
                     .andExpect(jsonPath("name", is(itemName)))
                     .andExpect(jsonPath("description", is(itemDesc)))
@@ -349,7 +350,7 @@ public class ItemControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
-                .andExpect(status().isOk());
+                    .andExpect(status().isOk());
 
         //item can no longer be retrieved, 404 is returned
         mvc.perform(get("/api/item/" + item.getId())

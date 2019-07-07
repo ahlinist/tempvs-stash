@@ -1,11 +1,9 @@
 package club.tempvs.stash.service.impl;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
-import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
@@ -15,9 +13,11 @@ import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
+import club.tempvs.stash.service.ImageService;
 import club.tempvs.stash.service.ItemGroupService;
 import club.tempvs.stash.service.ItemService;
 import club.tempvs.stash.util.ValidationHelper;
+import com.google.common.collect.ImmutableList;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemGroupService itemGroupService;
     private final ValidationHelper validationHelper;
     private final UserHolder userHolder;
-    private final ImageClient imageClient;
+    private final ImageService imageService;
 
     @Override
     public Item create(Long itmGroupId, Item item) {
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = findItemById(itemId);
         validateOwner(item);
 
-        ImageDto result = imageClient.store(imageDto);
+        ImageDto result = imageService.store(imageDto);
         item.getImages().add(result.toImage());
         return save(item);
     }
@@ -118,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(toList());
         item.setImages(images);
         Item persistentItem = save(item);
-        imageClient.delete(objectId);
+        imageService.delete(ImmutableList.of(objectId));
         return persistentItem;
     }
 
@@ -127,11 +127,11 @@ public class ItemServiceImpl implements ItemService {
         Item item = findItemById(itemId);
         validateOwner(item);
 
-        Set<String> objectIds = item.getImages()
+        List<String> objectIds = item.getImages()
                 .stream()
                 .map(Image::getObjectId)
-                .collect(toSet());
-        imageClient.delete(objectIds);
+                .collect(toList());
+        imageService.delete(objectIds);
         delete(item);
     }
 

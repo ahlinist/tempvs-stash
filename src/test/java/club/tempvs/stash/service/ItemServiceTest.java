@@ -1,6 +1,5 @@
 package club.tempvs.stash.service;
 
-import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
@@ -12,7 +11,7 @@ import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.impl.ItemServiceImpl;
 import club.tempvs.stash.util.ValidationHelper;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,7 +40,7 @@ public class ItemServiceTest {
     @Mock
     private UserHolder userHolder;
     @Mock
-    private ImageClient imageClient;
+    private ImageService imageService;
     @Mock
     private Item item;
     @Mock
@@ -246,16 +245,16 @@ public class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(item.getItemGroup()).thenReturn(itemGroup);
         when(itemGroup.getOwner()).thenReturn(user);
-        when(imageClient.store(imageDto)).thenReturn(imageDto);
+        when(imageService.store(imageDto)).thenReturn(imageDto);
         when(imageDto.toImage()).thenReturn(image);
         when(itemRepository.save(item)).thenReturn(item);
 
         Item result = itemService.addImage(itemId, imageDto);
 
         verify(itemRepository).findById(itemId);
-        verify(imageClient).store(imageDto);
+        verify(imageService).store(imageDto);
         verify(itemRepository).save(item);
-        verifyNoMoreInteractions(itemRepository, imageClient);
+        verifyNoMoreInteractions(itemRepository, imageService);
 
         assertEquals("Item is returned back", item, result);
     }
@@ -291,6 +290,7 @@ public class ItemServiceTest {
         Long itemId = 1L;
         Long userId = 2L;
         String objectId = "objectId";
+        List<String> objectIds = ImmutableList.of(objectId);
 
         when(userHolder.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
@@ -302,9 +302,9 @@ public class ItemServiceTest {
         Item result = itemService.deleteImage(itemId, objectId);
 
         verify(itemRepository).findById(itemId);
-        verify(imageClient).delete(objectId);
+        verify(imageService).delete(objectIds);
         verify(itemRepository).save(item);
-        verifyNoMoreInteractions(itemRepository, imageClient);
+        verifyNoMoreInteractions(itemRepository, imageService);
 
         assertEquals("Item is returned back", item, result);
     }
@@ -343,7 +343,7 @@ public class ItemServiceTest {
         Long userId = 2L;
         String objectId = "objectId1";
         List<Image> images = Arrays.asList(image);
-        Set<String> objectIds = ImmutableSet.of(objectId);
+        List<String> objectIds = ImmutableList.of(objectId);
 
         when(userHolder.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
@@ -356,9 +356,9 @@ public class ItemServiceTest {
         itemService.delete(itemId);
 
         verify(itemRepository).findById(itemId);
-        verify(imageClient).delete(objectIds);
+        verify(imageService).delete(objectIds);
         verify(itemRepository).delete(item);
-        verifyNoMoreInteractions(itemRepository, imageClient);
+        verifyNoMoreInteractions(itemRepository, imageService);
     }
 
     @Test(expected = NoSuchElementException.class)
