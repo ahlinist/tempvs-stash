@@ -3,7 +3,6 @@ package club.tempvs.stash;
 import club.tempvs.stash.dao.ItemGroupRepository;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.dao.UserRepository;
-import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.Item.Period;
 import club.tempvs.stash.domain.Item.Classification;
@@ -12,9 +11,6 @@ import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.UserInfoDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class EntityHelper {
@@ -58,17 +54,12 @@ public class EntityHelper {
     }
 
     public Item createItem(ItemGroup itemGroup, String name, String description, Classification classification, Period period) {
-        return createItem(itemGroup, name, description, classification, period, new ArrayList<>());
-    }
-
-    public Item createItem(ItemGroup itemGroup, String name, String description, Classification classification, Period period, List<Image> images) {
         Item item = new Item();
         item.setName(name);
         item.setDescription(description);
         item.setClassification(classification);
         item.setPeriod(period);
         item.setItemGroup(itemGroup);
-        item.setImages(images);
         return itemRepository.saveAndFlush(item);
     }
 }

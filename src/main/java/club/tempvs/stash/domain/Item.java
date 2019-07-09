@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,8 +27,6 @@ public class Item {
     private Period period;
     @OneToOne
     private ItemGroup itemGroup;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Image> images = new ArrayList<>();
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Long> sources = new HashSet<>();
 

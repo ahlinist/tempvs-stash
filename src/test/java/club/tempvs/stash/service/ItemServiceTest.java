@@ -1,7 +1,6 @@
 package club.tempvs.stash.service;
 
 import club.tempvs.stash.dao.ItemRepository;
-import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
@@ -49,8 +48,6 @@ public class ItemServiceTest {
     private ErrorsDto errors;
     @Mock
     private User user, owner;
-    @Mock
-    private Image image;
     @Mock
     private ImageDto imageDto;
 
@@ -292,16 +289,12 @@ public class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(item.getItemGroup()).thenReturn(itemGroup);
         when(itemGroup.getOwner()).thenReturn(user);
-        when(itemRepository.save(item)).thenReturn(item);
 
-        Item result = itemService.deleteImage(itemId, objectId);
+        itemService.deleteImage(itemId, objectId);
 
         verify(itemRepository).findById(itemId);
         verify(imageService).delete(objectIds);
-        verify(itemRepository).save(item);
         verifyNoMoreInteractions(itemRepository, imageService);
-
-        assertEquals("Item is returned back", item, result);
     }
 
     @Test(expected = ForbiddenException.class)
@@ -336,22 +329,16 @@ public class ItemServiceTest {
     public void testDeleteItem() {
         Long itemId = 1L;
         Long userId = 2L;
-        String objectId = "objectId1";
-        List<Image> images = Arrays.asList(image);
-        List<String> objectIds = ImmutableList.of(objectId);
 
         when(userHolder.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(item.getItemGroup()).thenReturn(itemGroup);
         when(itemGroup.getOwner()).thenReturn(user);
-        when(item.getImages()).thenReturn(images);
-        when(image.getObjectId()).thenReturn(objectId);
 
         itemService.delete(itemId);
 
         verify(itemRepository).findById(itemId);
-        verify(imageService).delete(objectIds);
         verify(itemRepository).delete(item);
         verifyNoMoreInteractions(itemRepository, imageService);
     }

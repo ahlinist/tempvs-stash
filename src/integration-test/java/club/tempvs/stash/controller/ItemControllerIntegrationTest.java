@@ -1,7 +1,6 @@
 package club.tempvs.stash.controller;
 
 import club.tempvs.stash.EntityHelper;
-import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.Item.Period;
 import club.tempvs.stash.domain.Item.Classification;
@@ -25,8 +24,6 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -272,19 +269,10 @@ public class ItemControllerIntegrationTest {
         String groupDescription = "my group desc";
         String lang = "en";
         String objectId1 = "objectId1";
-        String objectId2 = "objectId2";
-        String fileName = "image.jpg";
-        Image image1 = new Image();
-        image1.setObjectId(objectId1);
-        image1.setFileName(fileName);
-        Image image2 = new Image();
-        image2.setObjectId(objectId2);
-        image2.setFileName(fileName);
-        List<Image> images = Arrays.asList(image1, image2);
 
         User user = entityHelper.createUser(userId, userName);
         ItemGroup itemGroup = entityHelper.createItemGroup(user, groupName, groupDescription);
-        Item item = entityHelper.createItem(itemGroup, itemName, itemDescription, Classification.ARMOR, Period.ANCIENT, images);
+        Item item = entityHelper.createItem(itemGroup, itemName, itemDescription, Classification.ARMOR, Period.ANCIENT);
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
@@ -293,15 +281,7 @@ public class ItemControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
-                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("name", is(itemName)))
-                    .andExpect(jsonPath("description", is(itemDescription)))
-                    .andExpect(jsonPath("classification", is("ARMOR")))
-                    .andExpect(jsonPath("period", is("ANCIENT")))
-                    .andExpect(jsonPath("images", hasSize(1)))
-                    .andExpect(jsonPath("images[0].objectId", is(objectId2)))
-                    .andExpect(jsonPath("images[0].imageInfo", isEmptyOrNullString()))
-                    .andExpect(jsonPath("images[0].fileName", is(fileName)));
+                     .andExpect(status().isOk());
     }
 
     @Test

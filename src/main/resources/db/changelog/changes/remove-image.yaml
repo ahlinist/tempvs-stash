@@ -1,0 +1,35 @@
+databaseChangeLog:
+- changeSet:
+    id: 1562695476893-1
+    author: albvs (generated)
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: item_images
+        constraintName: FKbblr4qy805jfsx4aiy1uww0mb
+- changeSet:
+    id: 1562695476893-2
+    author: albvs (generated)
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: item_images
+        constraintName: FKjsalcmjtpwsb2e9rlovdn57n2
+- changeSet:
+    id: 1562695476893-3
+    author: albvs (generated)
+    changes:
+    - dropUniqueConstraint:
+        constraintName: UK_jxspkjithlkrckvx5bpxwksie
+        tableName: item_images
+- changeSet:
+    id: 1562695476893-4
+    author: albvs (generated)
+    changes:
+    - dropTable:
+        tableName: image
+- changeSet:
+    id: 1562695476893-5
+    author: albvs (generated)
+    changes:
+    - dropTable:
+        tableName: item_images
+

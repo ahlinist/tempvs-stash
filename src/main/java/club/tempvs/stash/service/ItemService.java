@@ -19,7 +19,7 @@ public interface ItemService {
 
     void addImage(Long itemId, ImageDto imageDto);
 
-    Item deleteImage(Long itemId, String objectId);
+    void deleteImage(Long itemId, String objectId);
 
     void delete(Long id);
 }

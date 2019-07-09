@@ -1,11 +1,9 @@
 package club.tempvs.stash.service.impl;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import club.tempvs.stash.dao.ItemRepository;
-import club.tempvs.stash.domain.Image;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
@@ -110,17 +108,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item deleteImage(Long itemId, String objectId) {
+    public void deleteImage(Long itemId, String objectId) {
         Item item = findItemById(itemId);
         validateOwner(item);
-
-        List<Image> images = item.getImages().stream()
-                .filter(image -> !image.getObjectId().equals(objectId))
-                .collect(toList());
-        item.setImages(images);
-        Item persistentItem = save(item);
         imageService.delete(ImmutableList.of(objectId));
-        return persistentItem;
     }
 
     @Override
@@ -128,11 +119,8 @@ public class ItemServiceImpl implements ItemService {
         Item item = findItemById(itemId);
         validateOwner(item);
 
-        List<String> objectIds = item.getImages()
-                .stream()
-                .map(Image::getObjectId)
-                .collect(toList());
-        imageService.delete(objectIds);
+        //TODO: delete images by query
+        //imageService.delete(objectIds);
         delete(item);
     }
 

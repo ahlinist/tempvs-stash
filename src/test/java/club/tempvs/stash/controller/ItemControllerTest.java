@@ -121,7 +121,7 @@ public class ItemControllerTest {
         itemController.addImage(id, imageDto);
 
         verify(itemService).addImage(id, imageDto);
-        verifyNoMoreInteractions(itemService, imageDto);
+        verifyNoMoreInteractions(itemService);
     }
 
 
@@ -130,15 +130,10 @@ public class ItemControllerTest {
         Long itemId = 1L;
         String objectId = "objectId";
 
-        when(itemService.deleteImage(itemId, objectId)).thenReturn(item);
-        when(item.toItemDto()).thenReturn(itemDto);
-
-        ItemDto result = itemController.deleteImage(itemId, objectId);
+        itemController.deleteImage(itemId, objectId);
 
         verify(itemService).deleteImage(itemId, objectId);
-        verifyNoMoreInteractions(itemService, imageDto);
-
-        assertEquals("ImageDto is returned back", itemDto, result);
+        verifyNoMoreInteractions(itemService);
     }
 
     @Test
