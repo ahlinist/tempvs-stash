@@ -118,15 +118,10 @@ public class ItemControllerTest {
     public void testAddImage() {
         Long id = 1L;
 
-        when(itemService.addImage(id, imageDto)).thenReturn(item);
-        when(item.toItemDto()).thenReturn(itemDto);
-
-        ItemDto result = itemController.addImage(id, imageDto);
+        itemController.addImage(id, imageDto);
 
         verify(itemService).addImage(id, imageDto);
         verifyNoMoreInteractions(itemService, imageDto);
-
-        assertEquals("ImageDto is returned back", itemDto, result);
     }
 
 

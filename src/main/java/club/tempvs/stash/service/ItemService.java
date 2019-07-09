@@ -17,7 +17,7 @@ public interface ItemService {
 
     Item updateDescription(Long id, String name);
 
-    Item addImage(Long itemId, ImageDto imageDto);
+    void addImage(Long itemId, ImageDto imageDto);
 
     Item deleteImage(Long itemId, String objectId);
 

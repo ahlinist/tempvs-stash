@@ -37,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private static final String NAME_MISSING_ERROR = "item.name.blank.error";
     private static final String CLASSIFICATION_MISSING_ERROR = "item.classification.blank.error";
     private static final String PERIOD_MISSING_ERROR = "item.period.blank.error";
+    private static final String ITEM_ENTITY_IDENTIFIER = "item";
 
     private final ItemRepository itemRepository;
     private final ItemGroupService itemGroupService;
@@ -99,13 +100,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item addImage(Long itemId, ImageDto imageDto) {
+    public void addImage(Long itemId, ImageDto imageDto) {
         Item item = findItemById(itemId);
         validateOwner(item);
 
-        ImageDto result = imageService.store(imageDto);
-        item.getImages().add(result.toImage());
-        return save(item);
+        imageDto.setBelongsTo(ITEM_ENTITY_IDENTIFIER);
+        imageDto.setEntityId(itemId);
+        imageService.store(imageDto);
     }
 
     @Override

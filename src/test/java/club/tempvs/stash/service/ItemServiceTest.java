@@ -246,17 +246,12 @@ public class ItemServiceTest {
         when(item.getItemGroup()).thenReturn(itemGroup);
         when(itemGroup.getOwner()).thenReturn(user);
         when(imageService.store(imageDto)).thenReturn(imageDto);
-        when(imageDto.toImage()).thenReturn(image);
-        when(itemRepository.save(item)).thenReturn(item);
 
-        Item result = itemService.addImage(itemId, imageDto);
+        itemService.addImage(itemId, imageDto);
 
         verify(itemRepository).findById(itemId);
         verify(imageService).store(imageDto);
-        verify(itemRepository).save(item);
         verifyNoMoreInteractions(itemRepository, imageService);
-
-        assertEquals("Item is returned back", item, result);
     }
 
     @Test(expected = ForbiddenException.class)

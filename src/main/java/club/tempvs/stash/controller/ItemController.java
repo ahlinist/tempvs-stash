@@ -57,8 +57,8 @@ public class ItemController {
     }
 
     @PostMapping("/item/{itemId}/images")
-    public ItemDto addImage(@PathVariable Long itemId, @RequestBody ImageDto imageDto) {
-        return itemService.addImage(itemId, imageDto).toItemDto();
+    public void addImage(@PathVariable Long itemId, @RequestBody ImageDto imageDto) {
+        itemService.addImage(itemId, imageDto);
     }
 
 
