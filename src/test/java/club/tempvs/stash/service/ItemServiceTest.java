@@ -242,7 +242,6 @@ public class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(item.getItemGroup()).thenReturn(itemGroup);
         when(itemGroup.getOwner()).thenReturn(user);
-        when(imageService.store(imageDto)).thenReturn(imageDto);
 
         itemService.addImage(itemId, imageDto);
 
@@ -339,6 +338,7 @@ public class ItemServiceTest {
         itemService.delete(itemId);
 
         verify(itemRepository).findById(itemId);
+        verify(imageService).delete("item", itemId);
         verify(itemRepository).delete(item);
         verifyNoMoreInteractions(itemRepository, imageService);
     }

@@ -1,14 +1,11 @@
 package club.tempvs.stash.service;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import club.tempvs.stash.amqp.ImageEventProcessor;
-import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.service.impl.ImageServiceImpl;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,7 +15,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 
 import java.util.List;
-import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ImageServiceTest {
@@ -29,36 +25,47 @@ public class ImageServiceTest {
     @Mock
     private ImageEventProcessor imageEventProcessor;
     @Mock
-    private ImageClient imageClient;
-    @Mock
     private MessageChannel messageChannel;
     @Mock
     private ImageDto imageDto;
 
     @Test
-    public void testDeleteImage() {
+    public void testDeleteImagesByIds() {
         String objectId1 = "objectId1";
         String objectId2 = "objectId2";
         List<String> objectIds = ImmutableList.of(objectId1, objectId2);
 
-        when(imageEventProcessor.deleteImage()).thenReturn(messageChannel);
+        when(imageEventProcessor.deleteByIds()).thenReturn(messageChannel);
 
         imageService.delete(objectIds);
 
-        verify(imageEventProcessor).deleteImage();
+        verify(imageEventProcessor).deleteByIds();
         verify(messageChannel).send(any(Message.class));
-        verifyNoMoreInteractions(imageEventProcessor);
+        verifyNoMoreInteractions(imageEventProcessor, messageChannel);
+    }
+
+    @Test
+    public void testDeleteImagesForEntity() {
+        String belongsTo = "item";
+        Long entityId = 3L;
+
+        when(imageEventProcessor.deleteForEntity()).thenReturn(messageChannel);
+
+        imageService.delete(belongsTo, entityId);
+
+        verify(imageEventProcessor).deleteForEntity();
+        verify(messageChannel).send(any(Message.class));
+        verifyNoMoreInteractions(imageEventProcessor, messageChannel);
     }
 
     @Test
     public void testStore() {
-        when(imageClient.store(imageDto)).thenReturn(imageDto);
+        when(imageEventProcessor.store()).thenReturn(messageChannel);
 
-        ImageDto result = imageService.store(imageDto);
+        imageService.store(imageDto);
 
-        verify(imageClient).store(imageDto);
-        verifyNoMoreInteractions(imageClient);
-
-        assertEquals("ImageDto is returned", imageDto, result);
+        verify(imageEventProcessor).store();
+        verify(messageChannel).send(any(Message.class));
+        verifyNoMoreInteractions(imageEventProcessor, messageChannel);
     }
 }

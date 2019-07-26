@@ -8,5 +8,7 @@ public interface ImageService {
 
     void delete(List<String> objectIds);
 
-    ImageDto store(ImageDto imageDto);
+    void delete(String belongsTo, Long entityId);
+
+    void store(ImageDto imageDto);
 }

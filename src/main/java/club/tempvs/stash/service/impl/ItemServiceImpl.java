@@ -118,9 +118,7 @@ public class ItemServiceImpl implements ItemService {
     public void delete(Long itemId) {
         Item item = findItemById(itemId);
         validateOwner(item);
-
-        //TODO: delete images by query
-        //imageService.delete(objectIds);
+        imageService.delete(ITEM_ENTITY_IDENTIFIER, itemId);
         delete(item);
     }
 

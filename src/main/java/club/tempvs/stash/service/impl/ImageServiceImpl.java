@@ -1,11 +1,11 @@
 package club.tempvs.stash.service.impl;
 
+import static org.springframework.messaging.support.MessageBuilder.withPayload;
+
 import club.tempvs.stash.amqp.ImageEventProcessor;
-import club.tempvs.stash.clients.ImageClient;
 import club.tempvs.stash.dto.ImageDto;
 import club.tempvs.stash.service.ImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,16 +15,23 @@ import java.util.List;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageEventProcessor imageEventProcessor;
-    private final ImageClient imageClient;
 
     @Override
     public void delete(List<String> objectIds) {
-        imageEventProcessor.deleteImage()
-                .send(MessageBuilder.withPayload(objectIds).build());
+        imageEventProcessor.deleteByIds()
+                .send(withPayload(objectIds).build());
     }
 
     @Override
-    public ImageDto store(ImageDto payload) {
-        return imageClient.store(payload);
+    public void delete(String belongsTo, Long entityId) {
+        String query = String.format("%1$s::%2$d", belongsTo, entityId);
+        imageEventProcessor.deleteForEntity()
+                .send(withPayload(query).build());
+    }
+
+    @Override
+    public void store(ImageDto payload) {
+        imageEventProcessor.store()
+                .send(withPayload(payload).build());
     }
 }

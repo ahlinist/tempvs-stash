@@ -5,6 +5,12 @@ import org.springframework.messaging.MessageChannel;
 
 public interface ImageEventProcessor {
 
-    @Output("image.delete")
-    MessageChannel deleteImage();
+    @Output("image.delete-by-ids")
+    MessageChannel deleteByIds();
+
+    @Output("image.delete-for-entity")
+    MessageChannel deleteForEntity();
+
+    @Output("image.store")
+    MessageChannel store();
 }
