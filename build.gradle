@@ -59,7 +59,6 @@ dependencies {
 	liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
 	liquibaseRuntime sourceSets.main.output
 	//testing
-	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 	testImplementation 'com.h2database:h2:1.4.194'
 	testImplementation  'org.springframework.cloud:spring-cloud-stream-test-support'
 }
