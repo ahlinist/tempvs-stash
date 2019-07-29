@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class ItemGroup {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     @NotBlank
     private String name;

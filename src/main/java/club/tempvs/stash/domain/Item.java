@@ -16,14 +16,16 @@ import java.util.Set;
 public class Item {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     @NotBlank
     private String name;
     private String description;
     @NotNull
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Classification classification;
     @NotNull
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Period period;
     @OneToOne
     private ItemGroup itemGroup;
