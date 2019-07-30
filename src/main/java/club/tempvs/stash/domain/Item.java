@@ -22,10 +22,10 @@ public class Item {
     private String name;
     private String description;
     @NotNull
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Enumerated(EnumType.STRING)
     private Classification classification;
     @NotNull
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Enumerated(EnumType.STRING)
     private Period period;
     @OneToOne
     private ItemGroup itemGroup;

@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1564425418594-1
+    id: 1564516190282-1
     author: albvs (generated)
     changes:
     - createTable:
@@ -16,7 +16,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: app_user
 - changeSet:
-    id: 1564425418594-2
+    id: 1564516190282-2
     author: albvs (generated)
     changes:
     - createTable:
@@ -30,7 +30,7 @@ databaseChangeLog:
             type: BIGINT
         - column:
             name: classification
-            type: INTEGER
+            type: VARCHAR(255)
         - column:
             name: description
             type: VARCHAR(255)
@@ -39,13 +39,13 @@ databaseChangeLog:
             type: VARCHAR(255)
         - column:
             name: period
-            type: INTEGER
+            type: VARCHAR(255)
         - column:
             name: item_group_id
             type: BIGINT
         tableName: item
 - changeSet:
-    id: 1564425418594-3
+    id: 1564516190282-3
     author: albvs (generated)
     changes:
     - createTable:
@@ -68,7 +68,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: item_group
 - changeSet:
-    id: 1564425418594-4
+    id: 1564516190282-4
     author: albvs (generated)
     changes:
     - createTable:
@@ -83,27 +83,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: item_sources
 - changeSet:
-    id: 1564425418594-5
-    author: albvs (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              primaryKeyName: item_to_sourcePK
-            name: id
-            type: BIGINT
-        - column:
-            name: item_id
-            type: BIGINT
-        - column:
-            name: source_id
-            type: BIGINT
-        tableName: item_to_source
-- changeSet:
-    id: 1564425418594-6
+    id: 1564516190282-5
     author: albvs (generated)
     changes:
     - addForeignKeyConstraint:
@@ -116,7 +96,7 @@ databaseChangeLog:
         referencedTableName: item
         validate: true
 - changeSet:
-    id: 1564425418594-7
+    id: 1564516190282-6
     author: albvs (generated)
     changes:
     - addForeignKeyConstraint:
@@ -129,7 +109,7 @@ databaseChangeLog:
         referencedTableName: app_user
         validate: true
 - changeSet:
-    id: 1564425418594-8
+    id: 1564516190282-7
     author: albvs (generated)
     changes:
     - addForeignKeyConstraint:
