@@ -3,12 +3,14 @@ package club.tempvs.stash.service.impl;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import club.tempvs.stash.client.SourceClient;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.dto.ImageDto;
+import club.tempvs.stash.dto.SourceDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
 import club.tempvs.stash.service.ImageService;
@@ -42,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
     private final ValidationHelper validationHelper;
     private final UserHolder userHolder;
     private final ImageService imageService;
+    private final SourceClient sourceClient;
 
     @Override
     public Item create(Long itmGroupId, Item item) {
@@ -133,6 +136,32 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @Override
+    public Item linkSource(Long itemId, Long sourceId) {
+        Item item = findItemById(itemId);
+        SourceDto source = sourceClient.get(sourceId);
+
+        if (source == null) {
+            throw new NoSuchElementException(String.format("Source with id %d is missing", sourceId));
+        }
+
+        if (source.getClassification() != item.getClassification() || source.getPeriod() != item.getPeriod()) {
+            throw new IllegalStateException("Source classification or period do not match the item's.");
+        }
+
+        item.getSources().add(sourceId);
+        return save(item);
+    }
+
+    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    public List<Item> getItems(Long itemGroupId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return itemRepository.findAllByItemGroupId(itemGroupId, pageable);
+    }
+
     private void validateOwner(Item item) {
         validateOwner(item.getItemGroup());
     }
@@ -143,15 +172,6 @@ public class ItemServiceImpl implements ItemService {
     private Item findItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
-    public List<Item> getItems(Long itemGroupId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return itemRepository.findAllByItemGroupId(itemGroupId, pageable);
     }
 
     @HystrixCommand(commandProperties = {

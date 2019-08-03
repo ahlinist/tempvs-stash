@@ -1,13 +1,17 @@
 package club.tempvs.stash.service;
 
+import club.tempvs.stash.client.SourceClient;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.domain.Item;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.ErrorsDto;
 import club.tempvs.stash.dto.ImageDto;
+import club.tempvs.stash.dto.SourceDto;
 import club.tempvs.stash.exception.ForbiddenException;
 import club.tempvs.stash.holder.UserHolder;
+import club.tempvs.stash.model.Classification;
+import club.tempvs.stash.model.Period;
 import club.tempvs.stash.service.impl.ItemServiceImpl;
 import club.tempvs.stash.util.ValidationHelper;
 import com.google.common.collect.ImmutableList;
@@ -41,6 +45,8 @@ public class ItemServiceTest {
     @Mock
     private ImageService imageService;
     @Mock
+    private SourceClient sourceClient;
+    @Mock
     private Item item;
     @Mock
     private ItemGroup itemGroup;
@@ -50,6 +56,8 @@ public class ItemServiceTest {
     private User user, owner;
     @Mock
     private ImageDto imageDto;
+    @Mock
+    private SourceDto sourceDto;
 
     @Test
     public void testCreateItem() {
@@ -367,5 +375,77 @@ public class ItemServiceTest {
         when(itemGroup.getOwner()).thenReturn(wrongUser);
 
         itemService.delete(itemId);
+    }
+
+    @Test
+    public void testLinkSource() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(sourceClient.get(sourceId)).thenReturn(sourceDto);
+        when(sourceDto.getClassification()).thenReturn(Classification.ARMOR);
+        when(sourceDto.getPeriod()).thenReturn(Period.ANCIENT);
+        when(item.getClassification()).thenReturn(Classification.ARMOR);
+        when(item.getPeriod()).thenReturn(Period.ANCIENT);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        Item result = itemService.linkSource(itemId, sourceId);
+
+        verify(sourceClient).get(sourceId);
+        verify(itemRepository).findById(itemId);
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository, sourceClient);
+
+        assertEquals("Item object is returned", item, result);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testLinkSourceForMissingItem() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.linkSource(itemId, sourceId);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testLinkSourceForMissingSource() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(sourceClient.get(sourceId)).thenReturn(null);
+
+        itemService.linkSource(itemId, sourceId);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testLinkSourceForSourceWithWrongPeriodReturned() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(sourceClient.get(sourceId)).thenReturn(sourceDto);
+        when(sourceDto.getClassification()).thenReturn(Classification.ARMOR);
+        when(sourceDto.getPeriod()).thenReturn(Period.CONTEMPORARY);
+        when(item.getClassification()).thenReturn(Classification.ARMOR);
+        when(item.getPeriod()).thenReturn(Period.ANCIENT);
+
+        itemService.linkSource(itemId, sourceId);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testLinkSourceForSourceWithWrongClassificationReturned() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(sourceClient.get(sourceId)).thenReturn(sourceDto);
+        when(sourceDto.getClassification()).thenReturn(Classification.CLOTHING);
+        when(item.getClassification()).thenReturn(Classification.ARMOR);
+
+        itemService.linkSource(itemId, sourceId);
     }
 }

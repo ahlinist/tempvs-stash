@@ -71,4 +71,10 @@ public class ItemController {
     public void delete(@PathVariable Long id) {
         itemService.delete(id);
     }
+
+    @PostMapping("/item/{itemId}/source/{sourceId}")
+    public ItemDto linkSource(@PathVariable Long itemId, @PathVariable Long sourceId) {
+        return itemService.linkSource(itemId, sourceId)
+                .toItemDto();
+    }
 }

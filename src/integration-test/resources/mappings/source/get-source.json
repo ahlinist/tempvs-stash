@@ -1,0 +1,23 @@
+{
+  "priority": "1",
+  "request": {
+    "method": "GET",
+    "url": "/api/source/1"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "close"
+    },
+    "jsonBody": {
+      "id": "1",
+      "name": "test name",
+      "description": "test desc",
+      "classification": "CLOTHING",
+      "type": "WRITTEN",
+      "period": "ANTIQUITY",
+      "createdDate": "2019-07-29T18:26:22.152Z"
+    }
+  }
+}

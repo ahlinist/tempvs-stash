@@ -22,4 +22,6 @@ public interface ItemService {
     void deleteImage(Long itemId, String objectId);
 
     void delete(Long id);
+
+    Item linkSource(Long itemId, Long sourceId);
 }

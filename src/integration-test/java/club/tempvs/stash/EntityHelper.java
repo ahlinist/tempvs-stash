@@ -4,11 +4,11 @@ import club.tempvs.stash.dao.ItemGroupRepository;
 import club.tempvs.stash.dao.ItemRepository;
 import club.tempvs.stash.dao.UserRepository;
 import club.tempvs.stash.domain.Item;
-import club.tempvs.stash.domain.Item.Period;
-import club.tempvs.stash.domain.Item.Classification;
 import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.dto.UserInfoDto;
+import club.tempvs.stash.model.Classification;
+import club.tempvs.stash.model.Period;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 

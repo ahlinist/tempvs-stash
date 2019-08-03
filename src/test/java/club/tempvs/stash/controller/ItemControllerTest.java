@@ -145,4 +145,20 @@ public class ItemControllerTest {
         verify(itemService).delete(itemId);
         verifyNoMoreInteractions(itemService);
     }
+
+    @Test
+    public void testLinkSource() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemService.linkSource(itemId, sourceId)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.linkSource(itemId, sourceId);
+
+        verify(itemService).linkSource(itemId, sourceId);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("ItemDto is returned", itemDto, result);
+    }
 }

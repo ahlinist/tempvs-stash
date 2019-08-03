@@ -1,6 +1,8 @@
 package club.tempvs.stash.domain;
 
 import club.tempvs.stash.dto.ItemDto;
+import club.tempvs.stash.model.Classification;
+import club.tempvs.stash.model.Period;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -51,30 +53,5 @@ public class Item {
 
     public ItemDto toItemDto() {
         return new ItemDto(this);
-    }
-
-    public enum Classification {
-
-        CLOTHING,
-        FOOTWEAR,
-        HOUSEHOLD,
-        WEAPON,
-        ARMOR,
-        OTHER
-    }
-
-    public enum Period {
-
-        ANCIENT,
-        ANTIQUITY,
-        EARLY_MIDDLE_AGES,
-        HIGH_MIDDLE_AGES,
-        LATE_MIDDLE_AGES,
-        RENAISSANCE,
-        MODERN,
-        WWI,
-        WWII,
-        CONTEMPORARY,
-        OTHER
     }
 }
