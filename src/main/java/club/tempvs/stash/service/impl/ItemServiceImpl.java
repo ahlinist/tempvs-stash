@@ -144,7 +144,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userHolder.getUser();
 
         if (!user.equals(owner)) {
-            throw new ForbiddenException("Only owner can't link sources to items");
+            throw new ForbiddenException("Only owner can link sources to items");
         }
 
         SourceDto source = sourceClient.get(sourceId);
@@ -169,7 +169,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userHolder.getUser();
 
         if (!user.equals(owner)) {
-            throw new ForbiddenException("Only owner can't link sources to items");
+            throw new ForbiddenException("Only owner can unlink sources from items");
         }
 
         item.getSources().remove(sourceId);

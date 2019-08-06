@@ -2,7 +2,9 @@ package club.tempvs.stash.domain;
 
 import club.tempvs.stash.dto.UserInfoDto;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,6 +18,7 @@ public class User {
     @Id
     private Long id;
     @NotBlank
+    @EqualsAndHashCode.Exclude
     private String userName;
 
     public User(UserInfoDto userInfoDto) {
