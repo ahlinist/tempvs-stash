@@ -24,4 +24,6 @@ public interface ItemService {
     void delete(Long id);
 
     Item linkSource(Long itemId, Long sourceId);
+
+    Item unlinkSource(Long itemId, Long sourceId);
 }

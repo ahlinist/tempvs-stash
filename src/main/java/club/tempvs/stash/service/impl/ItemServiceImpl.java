@@ -162,6 +162,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Item unlinkSource(Long itemId, Long sourceId) {
+        Item item = findItemById(itemId);
+        User owner = item.getItemGroup()
+                .getOwner();
+        User user = userHolder.getUser();
+
+        if (!user.equals(owner)) {
+            throw new ForbiddenException("Only owner can't link sources to items");
+        }
+
+        item.getSources().remove(sourceId);
+        return save(item);
+    }
+
+    @Override
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })

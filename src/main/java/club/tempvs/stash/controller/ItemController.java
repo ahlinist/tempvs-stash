@@ -77,4 +77,10 @@ public class ItemController {
         return itemService.linkSource(itemId, sourceId)
                 .toItemDto();
     }
+
+    @DeleteMapping("/item/{itemId}/source/{sourceId}")
+    public ItemDto unlinkSource(@PathVariable Long itemId, @PathVariable Long sourceId) {
+        return itemService.unlinkSource(itemId, sourceId)
+                .toItemDto();
+    }
 }

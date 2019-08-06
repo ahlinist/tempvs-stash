@@ -474,4 +474,48 @@ public class ItemServiceTest {
 
         itemService.linkSource(itemId, sourceId);
     }
+
+    @Test
+    public void testUnlinkSource() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(owner);
+        when(itemRepository.save(item)).thenReturn(item);
+
+        Item result = itemService.unlinkSource(itemId, sourceId);
+
+        verify(itemRepository).findById(itemId);
+        verify(userHolder).getUser();
+        verify(itemRepository).save(item);
+        verifyNoMoreInteractions(itemRepository, sourceClient, userHolder);
+
+        assertEquals("Item object is returned", item, result);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testUnlinkSourceForMissingItem() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        itemService.unlinkSource(itemId, sourceId);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testUnlinkSourceForWrongUser() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(user);
+
+        itemService.unlinkSource(itemId, sourceId);
+    }
 }

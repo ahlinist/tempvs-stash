@@ -161,4 +161,20 @@ public class ItemControllerTest {
 
         assertEquals("ItemDto is returned", itemDto, result);
     }
+
+    @Test
+    public void testUnlinkSource() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(itemService.unlinkSource(itemId, sourceId)).thenReturn(item);
+        when(item.toItemDto()).thenReturn(itemDto);
+
+        ItemDto result = itemController.unlinkSource(itemId, sourceId);
+
+        verify(itemService).unlinkSource(itemId, sourceId);
+        verifyNoMoreInteractions(itemService);
+
+        assertEquals("ItemDto is returned", itemDto, result);
+    }
 }

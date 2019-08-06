@@ -369,6 +369,43 @@ public class ItemControllerIntegrationTest {
                     .andExpect(jsonPath("itemGroup.owner.userName", is(userName)));
     }
 
+    @Test
+    public void testUnlinkSource() throws Exception {
+        Long userId = 1L;
+        Long sourceId = 1L;
+        String userName = "Name Surname";
+        String lang = "en";
+        String groupName = "my group";
+        String groupDescription = "my group desc";
+        String itemName = "item 1 name";
+        String itemDesc = "item 1 desc";
+        User user = entityHelper.createUser(userId, userName);
+        ItemGroup itemGroup = entityHelper.createItemGroup(user, groupName, groupDescription);
+        Item item = entityHelper.createItem(itemGroup, itemName, itemDesc, Classification.CLOTHING, Period.ANTIQUITY);
+
+        String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
+
+        mvc.perform(post("/api/item/" + item.getId() + "/source/" + sourceId));
+
+        mvc.perform(delete("/api/item/" + item.getId() + "/source/" + sourceId)
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(USER_INFO_HEADER, userInfoValue)
+                .header(AUTHORIZATION_HEADER, TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id", isA(Integer.TYPE)))
+                .andExpect(jsonPath("name", is(itemName)))
+                .andExpect(jsonPath("description", is(itemDesc)))
+                .andExpect(jsonPath("classification", is("CLOTHING")))
+                .andExpect(jsonPath("period", is("ANTIQUITY")))
+                .andExpect(jsonPath("sources", hasSize(0)))
+                .andExpect(jsonPath("itemGroup.id", is(itemGroup.getId().intValue())))
+                .andExpect(jsonPath("itemGroup.name", is(groupName)))
+                .andExpect(jsonPath("itemGroup.description", is(groupDescription)))
+                .andExpect(jsonPath("itemGroup.owner.id", is(userId.intValue())))
+                .andExpect(jsonPath("itemGroup.owner.userName", is(userName)));
+    }
+
     @TestConfiguration
     public static class LocalRibbonClientConfiguration {
 
