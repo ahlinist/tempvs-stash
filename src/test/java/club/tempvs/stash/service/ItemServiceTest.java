@@ -383,6 +383,9 @@ public class ItemServiceTest {
         Long sourceId = 2L;
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(owner);
         when(sourceClient.get(sourceId)).thenReturn(sourceDto);
         when(sourceDto.getClassification()).thenReturn(Classification.ARMOR);
         when(sourceDto.getPeriod()).thenReturn(Period.ANCIENT);
@@ -392,10 +395,11 @@ public class ItemServiceTest {
 
         Item result = itemService.linkSource(itemId, sourceId);
 
-        verify(sourceClient).get(sourceId);
         verify(itemRepository).findById(itemId);
+        verify(userHolder).getUser();
+        verify(sourceClient).get(sourceId);
         verify(itemRepository).save(item);
-        verifyNoMoreInteractions(itemRepository, sourceClient);
+        verifyNoMoreInteractions(itemRepository, sourceClient, userHolder);
 
         assertEquals("Item object is returned", item, result);
     }
@@ -416,6 +420,9 @@ public class ItemServiceTest {
         Long sourceId = 2L;
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(owner);
         when(sourceClient.get(sourceId)).thenReturn(null);
 
         itemService.linkSource(itemId, sourceId);
@@ -427,6 +434,9 @@ public class ItemServiceTest {
         Long sourceId = 2L;
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(owner);
         when(sourceClient.get(sourceId)).thenReturn(sourceDto);
         when(sourceDto.getClassification()).thenReturn(Classification.ARMOR);
         when(sourceDto.getPeriod()).thenReturn(Period.CONTEMPORARY);
@@ -442,9 +452,25 @@ public class ItemServiceTest {
         Long sourceId = 2L;
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
+        when(userHolder.getUser()).thenReturn(owner);
         when(sourceClient.get(sourceId)).thenReturn(sourceDto);
         when(sourceDto.getClassification()).thenReturn(Classification.CLOTHING);
         when(item.getClassification()).thenReturn(Classification.ARMOR);
+
+        itemService.linkSource(itemId, sourceId);
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void testLinkSourceForWrongOwner() {
+        Long itemId = 1L;
+        Long sourceId = 2L;
+
+        when(userHolder.getUser()).thenReturn(user);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(item.getItemGroup()).thenReturn(itemGroup);
+        when(itemGroup.getOwner()).thenReturn(owner);
 
         itemService.linkSource(itemId, sourceId);
     }

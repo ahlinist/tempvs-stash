@@ -139,6 +139,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item linkSource(Long itemId, Long sourceId) {
         Item item = findItemById(itemId);
+        User owner = item.getItemGroup()
+                .getOwner();
+        User user = userHolder.getUser();
+
+        if (!user.equals(owner)) {
+            throw new ForbiddenException("Only owner can't link sources to items");
+        }
+
         SourceDto source = sourceClient.get(sourceId);
 
         if (source == null) {
