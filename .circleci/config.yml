@@ -38,16 +38,16 @@ jobs:
       - store_test_results:
           path: ~/unit-test
       # run integration tests!
-      #- run: ./gradlew integrationTest
-      #- run:
-      #    name: Save integration-test results
-      #    command: |
-      #      mkdir -p ~/integration-test/
-      #      find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/integration-test/ \;
-      #    when: always
-      #- store_test_results:
-      #    path: ~/integration-test
+      - run: ./gradlew integrationTest
+      - run:
+          name: Save integration-test results
+          command: |
+            mkdir -p ~/integration-test/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/integration-test/ \;
+          when: always
+      - store_test_results:
+          path: ~/integration-test
       - run: ./gradlew clean stage -x test
-      #store the build war
+      #store the build jar
       - store_artifacts:
           path: ~/repo/build/libs
