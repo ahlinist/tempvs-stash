@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.7.RELEASE'
+	id 'org.springframework.boot' version '2.2.1.RELEASE'
 	id 'org.liquibase.gradle' version '2.0.1'
 	id 'java'
 }
@@ -18,10 +18,11 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
-	set('springCloudVersion', 'Greenwich.SR2')
+	set('springCloudVersion', "Hoxton.RC2")
 }
 
 liquibase {
@@ -43,7 +44,7 @@ generateChangelog.dependsOn compileJava
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
 	implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'

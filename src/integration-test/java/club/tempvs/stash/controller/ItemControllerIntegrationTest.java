@@ -6,17 +6,13 @@ import club.tempvs.stash.domain.ItemGroup;
 import club.tempvs.stash.domain.User;
 import club.tempvs.stash.model.Classification;
 import club.tempvs.stash.model.Period;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.cloud.netflix.ribbon.StaticServerList;
-import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +26,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
 @AutoConfigureWireMock(port = 8910, stubs = "classpath:/mappings/source")
 public class ItemControllerIntegrationTest {
 
@@ -60,7 +57,7 @@ public class ItemControllerIntegrationTest {
         String createItemJson = new String(Files.readAllBytes(createItemFile.toPath()));
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/group/" + itemGroup.getId() + "/item")
+        mvc.perform(post("/group/" + itemGroup.getId() + "/item")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(createItemJson)
@@ -97,7 +94,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(get("/api/group/" + itemGroup.getId() + "/item")
+        mvc.perform(get("/group/" + itemGroup.getId() + "/item")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -140,7 +137,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(get("/api/item/" + item.getId())
+        mvc.perform(get("/item/" + item.getId())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -176,7 +173,7 @@ public class ItemControllerIntegrationTest {
         File updateNameFile = ResourceUtils.getFile("classpath:item/update-name.json");
         String updateNameJson = new String(Files.readAllBytes(updateNameFile.toPath()));
 
-        mvc.perform(patch("/api/item/" + itemId + "/name")
+        mvc.perform(patch("/item/" + itemId + "/name")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(updateNameJson)
@@ -213,7 +210,7 @@ public class ItemControllerIntegrationTest {
         File updateDescriptionFile = ResourceUtils.getFile("classpath:item/update-description.json");
         String updateDescriptionJson = new String(Files.readAllBytes(updateDescriptionFile.toPath()));
 
-        mvc.perform(patch("/api/item/" + itemId + "/description")
+        mvc.perform(patch("/item/" + itemId + "/description")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(updateDescriptionJson)
@@ -250,7 +247,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/item/" + item.getId() + "/images")
+        mvc.perform(post("/item/" + item.getId() + "/images")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(uploadImageFileJson)
@@ -276,7 +273,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(delete("/api/item/" + item.getId() + "/images/" + objectId1)
+        mvc.perform(delete("/item/" + item.getId() + "/images/" + objectId1)
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -300,7 +297,7 @@ public class ItemControllerIntegrationTest {
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
         //item is retrieved
-        mvc.perform(get("/api/item/" + item.getId())
+        mvc.perform(get("/item/" + item.getId())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -318,7 +315,7 @@ public class ItemControllerIntegrationTest {
                     .andExpect(jsonPath("itemGroup.owner.userName", is(userName)));
 
         //item is deleted
-        mvc.perform(delete("/api/item/" + item.getId())
+        mvc.perform(delete("/item/" + item.getId())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -326,7 +323,7 @@ public class ItemControllerIntegrationTest {
                     .andExpect(status().isOk());
 
         //item can no longer be retrieved, 404 is returned
-        mvc.perform(get("/api/item/" + item.getId())
+        mvc.perform(get("/item/" + item.getId())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -350,7 +347,7 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/item/" + item.getId() + "/source/" + sourceId)
+        mvc.perform(post("/item/" + item.getId() + "/source/" + sourceId)
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -385,9 +382,9 @@ public class ItemControllerIntegrationTest {
 
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/item/" + item.getId() + "/source/" + sourceId));
+        mvc.perform(post("/item/" + item.getId() + "/source/" + sourceId));
 
-        mvc.perform(delete("/api/item/" + item.getId() + "/source/" + sourceId)
+        mvc.perform(delete("/item/" + item.getId() + "/source/" + sourceId)
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -404,14 +401,5 @@ public class ItemControllerIntegrationTest {
                 .andExpect(jsonPath("itemGroup.description", is(groupDescription)))
                 .andExpect(jsonPath("itemGroup.owner.id", is(userId.intValue())))
                 .andExpect(jsonPath("itemGroup.owner.userName", is(userName)));
-    }
-
-    @TestConfiguration
-    public static class LocalRibbonClientConfiguration {
-
-        @Bean
-        public ServerList<Server> ribbonServerList() {
-            return new StaticServerList<>(new Server("localhost", 8910));
-        }
     }
 }

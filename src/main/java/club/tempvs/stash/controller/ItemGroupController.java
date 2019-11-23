@@ -11,7 +11,7 @@ import javax.validation.constraints.Max;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/group")
+@RequestMapping("/group")
 @RequiredArgsConstructor
 public class ItemGroupController {
 

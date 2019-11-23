@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
 public class ItemController {
 
     private static final int MAX_SIZE_VALUE = 40;

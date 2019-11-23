@@ -2,7 +2,7 @@
   "priority": "1",
   "request": {
     "method": "GET",
-    "url": "/api/source/1"
+    "url": "/source/1"
   },
   "response": {
     "status": 200,

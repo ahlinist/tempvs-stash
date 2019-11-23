@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
 public class ItemGroupControllerIntegrationTest {
 
     private static final String USER_INFO_HEADER = "User-Info";
@@ -46,7 +48,7 @@ public class ItemGroupControllerIntegrationTest {
         String createGroupJson = new String(Files.readAllBytes(createGroupFile.toPath()));
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/group")
+        mvc.perform(post("/group")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(createGroupJson)
@@ -69,7 +71,7 @@ public class ItemGroupControllerIntegrationTest {
         String createGroupJson = new String(Files.readAllBytes(createGroupFile.toPath()));
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(post("/api/group")
+        mvc.perform(post("/group")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(createGroupJson)
@@ -92,7 +94,7 @@ public class ItemGroupControllerIntegrationTest {
         entityHelper.createItemGroup(user, group2Name, group2Description);
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, "en");
 
-        mvc.perform(get("/api/group?userId=" + userId)
+        mvc.perform(get("/group?userId=" + userId)
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
                     .andExpect(status().isOk())
@@ -121,7 +123,7 @@ public class ItemGroupControllerIntegrationTest {
         entityHelper.createItemGroup(user, group2Name, group2Description);
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, "en");
 
-        mvc.perform(get("/api/group")
+        mvc.perform(get("/group")
                 .header(USER_INFO_HEADER, userInfoValue)
                 .header(AUTHORIZATION_HEADER, TOKEN))
                     .andExpect(status().isOk())
@@ -149,7 +151,7 @@ public class ItemGroupControllerIntegrationTest {
         Long groupId = itemGroup.getId();
         String userInfoValue = entityHelper.composeUserInfo(userId, userName, lang);
 
-        mvc.perform(get("/api/group/" + groupId)
+        mvc.perform(get("/group/" + groupId)
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header(USER_INFO_HEADER, userInfoValue)
@@ -176,7 +178,7 @@ public class ItemGroupControllerIntegrationTest {
         File updateNameFile = ResourceUtils.getFile("classpath:group/update-name.json");
         String updateNameJson = new String(Files.readAllBytes(updateNameFile.toPath()));
 
-        mvc.perform(patch("/api/group/" + groupId + "/name")
+        mvc.perform(patch("/group/" + groupId + "/name")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(updateNameJson)
@@ -204,7 +206,7 @@ public class ItemGroupControllerIntegrationTest {
         File updateDescriptionFile = ResourceUtils.getFile("classpath:group/update-description.json");
         String updateDescriptionJson = new String(Files.readAllBytes(updateDescriptionFile.toPath()));
 
-        mvc.perform(patch("/api/group/" + groupId + "/description")
+        mvc.perform(patch("/group/" + groupId + "/description")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(updateDescriptionJson)
